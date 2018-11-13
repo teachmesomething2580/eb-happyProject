@@ -1,0 +1,343 @@
+@import url("https://fonts.googleapis.com/css?family=Nanum+Gothic");
+html, body, ul {
+  margin: 0;
+  padding: 0;
+  font-family: 'Nanum Gothic', sans-serif;
+}
+
+*, *::after, *::before {
+  box-sizing: border-box;
+}
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+.clearfix {
+  overflow: hidden;
+}
+
+.clearfix:after {
+  display: block;
+  content: "";
+  clear: both;
+}
+
+.dim-dark {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  height: 100px;
+  padding: 0 50px 0 50px;
+  border-bottom: 1px solid #ccc;
+}
+
+header a {
+  font-size: 18px;
+  font-weight: bold;
+  color: #222;
+  letter-spacing: -0.04em;
+  font-family: 'Nanum Gothic', sans-serif;
+}
+
+header > aside {
+  width: 0%;
+  border: solid 1px rgba(220, 220, 220, 0.4);
+  box-sizing: border-box;
+  height: 100%;
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  background-color: #ffffff;
+  overflow-x: hidden;
+  transition: 0.5s;
+}
+
+header > aside > div {
+  padding: 60px 20px 0 20px;
+}
+
+header > aside > div > .aside-logo {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+header > aside > div > .aside-logo > .logo-img {
+  width: 150px;
+  height: 25px;
+  float: left;
+}
+
+header > aside > div > .aside-logo > a {
+  float: right;
+}
+
+header > aside > div > .aside-form {
+  border: 1.8px solid black;
+  margin-bottom: 40px;
+}
+
+header > aside > div > .aside-form > form {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+header > aside > div > .aside-form > form > span {
+  margin: 10px;
+}
+
+header > aside > div > .aside-form > form > input {
+  font-size: 25px;
+  border: none;
+  width: 100%;
+}
+
+header > aside > div > .aside-form > form > input:focus {
+  outline: none;
+}
+
+header > aside > div > .aside-items > .aside-menu-item {
+  margin-top: 35px;
+  font-family: "Open Sans";
+}
+
+header > aside > div > .aside-items > div {
+  margin-top: 50px;
+  display: flex;
+}
+
+header > aside > div > .aside-items > div > div > a {
+  margin-right: 30px;
+}
+
+header > aside span.icon {
+  font-size: 25px !important;
+}
+
+header > .header-hamberger {
+  display: none;
+  margin-left: 5%;
+}
+
+header > .header-hamberger:hover {
+  cursor: pointer;
+}
+
+header > .aside-logo {
+  display: none;
+}
+
+header > .header-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+header > .header-container > div {
+  display: flex;
+}
+
+header > .header-container > .left-header {
+  margin-right: auto;
+}
+
+header > .header-container > .center-header > div {
+  padding: 0 30px 0 0;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+header > .header-container > .center-header > div > div {
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  height: 20px;
+}
+
+header > .header-container > .center-header > div > div:after {
+  content: ' ';
+  height: 100%;
+  display: block;
+  border-right: 1px solid #ccc;
+  padding-left: 30px;
+  float: right;
+}
+
+header > .header-container > .center-header > div:last-child {
+  padding: 0;
+}
+
+header > .header-container > .center-header > div:last-child:after {
+  border: none;
+}
+
+header > .header-container > .right-header {
+  margin-left: auto;
+}
+
+header > .header-container > .right-header > a {
+  font-size: 15px;
+}
+
+header > .header-container > .right-header > div {
+  display: flex;
+  padding-left: 15px;
+}
+
+header > .header-container > .right-header > div:before {
+  padding-right: 15px;
+  content: ' ';
+  height: 100%;
+  display: block;
+  border-left: 1px solid #ccc;
+  float: left;
+}
+
+header > .header-container > .right-header > div:last-child {
+  padding-right: 15px;
+}
+
+nav {
+  overflow: hidden;
+  height: 0;
+  transition: all 0.2s ease-in-out;
+}
+
+nav.active {
+  height: 355px;
+}
+
+nav > .nav-container {
+  display: flex;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+nav > .nav-container > div {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+
+nav > .nav-container > div > .nav-sub-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+nav > .nav-container > div > .nav-sub-menu > .nav-sub-menu-title {
+  margin-top: 20px;
+  padding-bottom: 9px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #222;
+}
+
+nav > .nav-container > div > .nav-sub-menu > .nav-sub-menu-content {
+  display: block;
+  padding-top: 10px;
+  font-size: 13px;
+}
+
+nav > .nav-container > div > .nav-sub-menu > .nav-sub-menu-content > a {
+  color: #767676;
+}
+
+nav > .nav-container > .nav-wrap-1 {
+  margin-right: auto;
+}
+
+nav > .nav-container > .nav-wrap-1 .happy21 {
+  width: 265px;
+  height: auto;
+  padding: 30px 0 0;
+  background: url(../images/index/GNBBanner_1.gif) 100% 100% no-repeat;
+}
+
+nav > .nav-container > .nav-wrap-1 .happyShare {
+  width: 265px;
+  height: auto;
+  margin-top: 20px;
+  padding: 20px 0 0;
+  border-top: 1px solid #f1f1f1;
+  background: url(../images/index/GNBBanner_2.gif) 100% 100% no-repeat;
+}
+
+nav > .nav-container > .nav-wrap-1 .gnbTl {
+  padding-bottom: 9px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #222;
+}
+
+nav > .nav-container > .nav-wrap-1 .gnbTxt {
+  font-size: 12px;
+  font-weight: bold;
+  color: #767676;
+}
+
+nav > .nav-container > .nav-wrap-1 a.btnGo {
+  display: inline-block;
+  *zoom: 1;
+  *display: inline;
+  height: 22px;
+  line-height: 22px;
+  margin-top: 18px;
+  padding: 0 11px;
+  background-color: #666;
+  color: #fff;
+  font-size: 12px;
+}
+
+nav > .nav-container > .nav-wrap-5 {
+  margin-left: auto;
+}
+
+nav > .nav-container > .nav-wrap-5 > .linkWrap {
+  margin-top: 30px;
+  padding-left: 40px;
+}
+
+nav > .nav-container > .nav-wrap-5 > .linkWrap > .btnCS {
+  display: block;
+  height: 48px;
+  line-height: 48px;
+  padding: 0 22px;
+  margin-bottom: 10px;
+  border: 1px solid #ebebeb;
+  background-color: #f8f8f8;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+@media only screen and (max-width: 1180px) {
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+  }
+  header > .header-container {
+    display: none !important;
+  }
+  header > .header-hamberger {
+    display: block;
+  }
+  header > .aside-logo {
+    display: flex;
+  }
+}

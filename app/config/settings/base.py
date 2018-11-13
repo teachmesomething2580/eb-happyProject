@@ -26,7 +26,6 @@ SECRET_KEY = SECRET_JSON['SECRET_KEY']
 
 # FOR STATIC
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(ROOT_DIR, '.static')
 
 # FOR AMAZONSETTINGS
 DEFAULT_FILE_STORAGE = 'config.storages.MediaClass'

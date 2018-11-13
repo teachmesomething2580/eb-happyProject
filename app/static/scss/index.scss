@@ -1,0 +1,366 @@
+@import url('https://fonts.googleapis.com/css?family=Nanum+Gothic');
+
+html, body, ul {
+  margin: 0;
+  padding: 0;
+  font-family: 'Nanum Gothic', sans-serif;
+}
+
+*, *::after, *::before { box-sizing:border-box; }
+
+a {
+  color: black;
+  text-decoration: none;
+}
+
+.clearfix {
+  overflow: hidden;
+  &:after {
+    display: block;
+    content:"";
+    clear: both;
+  }
+}
+
+.ir {
+  background-image: url(../../images/index/layout_1.png) !important;
+  background-repeat: no-repeat;
+  display: inline-block;
+  text-indent: 110%;
+  white-space: nowrap;
+}
+
+.ci {
+  width: 172px;
+  height: 53px;
+  background-position: 0 0;
+}
+
+.dim-dark {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  height: 100px;
+  padding: 0 50px 0 50px;
+  border-bottom: 1px solid #ccc;
+
+  a {
+    font-size: 18px;
+    font-weight: bold;
+    color: #222;
+    letter-spacing: -0.04em;
+    font-family: 'Nanum Gothic', sans-serif;
+  }
+
+  > aside {
+    width: 0%;
+    border: solid 1px rgba(220, 220, 220, 0.4);
+    box-sizing: border-box;
+    height: 100%;
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    background-color: #ffffff;
+    overflow-x: hidden;
+    transition: 0.5s;
+
+    > div {
+      padding: 60px 20px 0 20px;
+
+      > .aside-logo {
+        width: 100%;
+        margin-bottom: 10px;
+
+        > .logo-img{
+          width: 150px;
+          height: 25px;
+          float: left;
+        }
+
+        > a {
+          float: right;
+        }
+      }
+
+      > .aside-form {
+        border: 1.8px solid black;
+        margin-bottom: 40px;
+
+        > form {
+          display: flex;
+          align-items: center;
+          margin-bottom: 0;
+
+          > span {
+            margin: 10px;
+          }
+          > input {
+            font-size: 25px;
+            border: none;
+            width: 100%;
+
+            &:focus {
+              outline: none;
+            }
+          }
+        }
+      }
+
+      > .aside-items {
+
+        > .aside-menu-item {
+          margin-top: 35px;
+          font-family: "Open Sans";
+        }
+
+        > div {
+          margin-top: 50px;
+          display: flex;
+
+          > div > a {
+            margin-right: 30px;
+          }
+        }
+      }
+    }
+
+    span.icon {
+      font-size: 25px !important;
+    }
+  }
+
+  > .header-hamberger {
+    display: none;
+    margin-left: 5%;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  > .aside-logo {
+    display: none;
+  }
+
+  > .header-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    > div {
+      display: flex;
+    }
+
+    > .left-header {
+      margin-right: auto;
+    }
+
+    > .center-header {
+      > div {
+        padding: 0 30px 0 0;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+
+        > div {
+          justify-content: center;
+          align-items: center;
+          display: flex;
+          height: 20px;
+
+          &:after {
+            content: ' ';
+            height: 100%;
+            display: block;
+            border-right: 1px solid #ccc;
+            padding-left: 30px;
+            float: right;
+          }
+        }
+
+        &:last-child {
+          padding: 0;
+
+          &:after {
+            border: none;
+          }
+        }
+      }
+    }
+
+    > .right-header {
+      margin-left: auto;
+
+      > a {
+        font-size: 15px;
+      }
+
+      > div {
+        display: flex;
+        padding-left: 15px;
+
+        &:before {
+          padding-right: 15px;
+          content: ' ';
+          height: 100%;
+          display: block;
+          border-left: 1px solid #ccc;
+          float: left;
+        }
+
+        &:last-child {
+          padding-right: 15px;
+        }
+      }
+    }
+  }
+}
+
+nav {
+  overflow: hidden;
+  height: 0;
+  transition: all 0.2s ease-in-out;
+
+  &.active {
+    height: 355px;
+  }
+
+  > .nav-container {
+    display: flex;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      margin: auto;
+
+      > .nav-sub-menu {
+        display: flex;
+        flex-direction: column;
+
+        > .nav-sub-menu-title {
+          margin-top: 20px;
+          padding-bottom: 9px;
+          font-size: 16px;
+          font-weight: bold;
+          color: #222;
+        }
+
+        > .nav-sub-menu-content {
+          display: block;
+          padding-top: 10px;
+          font-size: 13px;
+
+
+          > a {
+            color: #767676;
+          }
+        }
+      }
+    }
+
+    > .nav-wrap-1 {
+      margin-right: auto;
+
+      .happy21 {
+        width: 265px;
+        height: auto;
+        padding: 30px 0 0;
+        background: url(../../images/index/GNBBanner_1.gif) 100% 100% no-repeat;
+      }
+
+      .happyShare {
+        width: 265px;
+        height: auto;
+        margin-top: 20px;
+        padding: 20px 0 0;
+        border-top: 1px solid #f1f1f1;
+        background: url(../../images/index/GNBBanner_2.gif) 100% 100% no-repeat;
+      }
+
+      .gnbTl {
+        padding-bottom: 9px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #222;
+      }
+
+      .gnbTxt {
+        font-size: 12px;
+        font-weight: bold;
+        color: #767676;
+      }
+
+      a.btnGo {
+        display: inline-block;
+        *zoom: 1;
+        *display: inline;
+        height: 22px;
+        line-height: 22px;
+        margin-top: 18px;
+        padding: 0 11px;
+        background-color: #666;
+        color: #fff;
+        font-size: 12px;
+      }
+    }
+
+    > .nav-wrap-5 {
+      margin-left: auto;
+      > .linkWrap {
+        margin-top: 30px;
+        padding-left: 40px;
+
+        > .btnCS {
+          display: block;
+          height: 48px;
+          line-height: 48px;
+          padding: 0 22px;
+          margin-bottom: 10px;
+          border: 1px solid #ebebeb;
+          background-color: #f8f8f8;
+          font-size: 14px;
+          font-weight: bold;
+          color: #333;
+        }
+      }
+    }
+
+
+  }
+}
+
+@media only screen and (max-width: 1180px) {
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+
+    > .header-container {
+      display: none !important;
+    }
+
+    > .header-hamberger{
+      display: block;
+    }
+
+    > .aside-logo{
+      display: flex;
+    }
+  }
+}

@@ -1,0 +1,37 @@
+.ir {
+  background-image: url(../../images/index/layout_1.png) !important;
+  background-repeat: no-repeat;
+  text-indent: 110%;
+  white-space: nowrap;
+}
+
+.ci {
+    background-position: 0 0;
+    width: 172px;
+    height: 53px;
+    display: block;
+}
+
+.logIn {
+  background-position: 0 -68px;
+  display: block;
+  width: 20px;
+  height: 19px;
+  margin: 0 auto 5px;
+}
+
+.join {
+  background-position: -30px -68px;
+  display: block;
+  width: 20px;
+  height: 19px;
+  margin: 0 auto 5px;
+}
+
+.sitemap {
+  background-position: -120px -68px;
+  display: block;
+  width: 20px;
+  height: 19px;
+  margin: 0 auto 5px;
+}

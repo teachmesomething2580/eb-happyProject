@@ -4,6 +4,8 @@ PRODUCTION_JSON = json.load(open(os.path.join(SECRETS_DIR, 'production.json')))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+STATIC_ROOT = os.path.join(ROOT_DIR, '.static')
+
 ALLOWED_HOSTS = [
     '.elasticbeanstalk.com',
     '.ashe.kr',
