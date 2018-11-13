@@ -18,6 +18,9 @@ ROOT_DIR = os.path.dirname(BASE_DIR)
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
+STATICFILES_DIRS = [
+    STATIC_DIR,
+]
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
