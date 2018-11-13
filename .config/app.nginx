@@ -4,8 +4,9 @@ server {
 
 server {
     listen 80;
+    listen 443;
 
-    server_name localhost .amazonaws.com .elasticbeanstalk.com;
+    server_name .ashe.kr .elasticbeanstalk.com;
 
     charset utf-8;
 
@@ -18,5 +19,9 @@ server {
 
     location /static/ {
         alias /srv/projects/.static/;
+    }
+
+    if ($http_x_forwarded_proto = 'http'){
+        return 301 https://$host$request_uri;
     }
 }

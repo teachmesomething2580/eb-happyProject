@@ -6,6 +6,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     '.elasticbeanstalk.com',
+    '.ashe.kr',
 ]
 
 WSGI_APPLICATION = 'config.wsgi.production.application'
