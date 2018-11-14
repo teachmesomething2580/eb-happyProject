@@ -11,13 +11,15 @@ class User(AbstractUser):
     name = models.CharField(max_length=10)
     sns_agree = models.BooleanField(default=False)
     email_agree = models.BooleanField(default=False)
-    online_available_use_category_limit = models.ForeignKey(
+    online_available_use_category_limit = models.ManyToManyField(
         'use_point.Category',
-        on_delete=models.CASCADE,
     )
     rating = models.ForeignKey(
         'members.Rating',
         on_delete=models.CASCADE,
+        # for Debug
+        blank=True,
+        null=True,
     )
     hammer = models.PositiveIntegerField(default=0)
     happy_cash = models.PositiveIntegerField(default=0)

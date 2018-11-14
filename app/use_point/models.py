@@ -31,7 +31,7 @@ class UsePoint(models.Model):
 
 
 class GiftCardType(models.Model):
-    available_day_limit = models.DateTimeField()
+    available_day_limit = models.DateField()
     amount = models.IntegerField()
     is_hotdeal = models.BooleanField(default=False)
     use_point = models.ForeignKey(
