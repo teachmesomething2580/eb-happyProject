@@ -28,8 +28,6 @@ class DefaultCash(models.Model):
 
 
 class Hammer(DefaultCash):
-    pass
-
     @staticmethod
     @transaction.atomic
     def give_hammer_point(user, amount):
@@ -42,9 +40,22 @@ class Hammer(DefaultCash):
         )
 
         hammer.save()
-        user.hammer += 500
+        user.hammer += amount
         user.save()
 
 
 class HappyCash(DefaultCash):
-    pass
+    @staticmethod
+    @transaction.atomic
+    def give_happy_cash_point(user, amount):
+
+        happy_cash = HappyCash(
+            content='회원가입 첫 500원',
+            amount=amount,
+            use_or_save='s',
+            user_id=user
+        )
+
+        happy_cash.save()
+        user.happy_cash += amount
+        user.save()
