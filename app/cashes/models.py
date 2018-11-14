@@ -30,14 +30,23 @@ class DefaultCash(models.Model):
 class Hammer(DefaultCash):
     @staticmethod
     @transaction.atomic
-    def give_hammer_point(user, amount):
+    def give_hammer_point(**kwargs):
+        """
+        amount 만큼 사용자의 hammer를 늘려주는 메서드,
+        로그를 남기기위해
+        content, amount, use_or_save, user_id 필드를 모두 채운 Hammer 객체도 생성된다.
+
+        :param user:
+        :param amount:
+        :return:
+        """
 
         hammer = Hammer(
-            content='회원가입 첫 500원',
-            amount=amount,
-            use_or_save='s',
-            user_id=user
+            **kwargs
         )
+
+        user = kwargs.get('user')
+        amount = kwargs.get('amount')
 
         hammer.save()
         user.hammer += amount
@@ -48,6 +57,15 @@ class HappyCash(DefaultCash):
     @staticmethod
     @transaction.atomic
     def give_happy_cash_point(user, amount):
+        """
+        amount 만큼 사용자의 happyCash를 늘려주는 메서드,
+        로그를 남기기 위해
+        content, amount, use_or_save, user_id 필드를 모두 채운 HappyCash 객체도 생성된다.
+
+        :param user:
+        :param amount:
+        :return:
+        """
 
         happy_cash = HappyCash(
             content='회원가입 첫 500원',
