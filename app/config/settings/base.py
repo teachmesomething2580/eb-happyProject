@@ -43,6 +43,7 @@ AUTH_USER_MODEL = 'members.User'
 
 INSTALLED_APPS = [
     'members',
+    'phonenumber_field',
 
     'django.contrib.admin',
     'django.contrib.auth',
