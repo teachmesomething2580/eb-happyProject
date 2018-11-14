@@ -11,15 +11,13 @@ class User(AbstractUser):
     name = models.CharField(max_length=10)
     sns_agree = models.BooleanField(default=False)
     email_agree = models.BooleanField(default=False)
-    online_available_use_category_limit = models.CharField(
-        choices='',
-        max_length=4,
-        blank=True,
+    online_available_use_category_limit = models.ForeignKey(
+        'use_point.Category',
+        on_delete=models.CASCADE,
     )
-    rating = models.CharField(
-        choices='',
-        max_length=4,
-        blank=True,
+    rating = models.ForeignKey(
+        'members.Rating',
+        on_delete=models.CASCADE,
     )
     hammer = models.PositiveIntegerField(default=0)
     happy_cash = models.PositiveIntegerField(default=0)
@@ -34,4 +32,12 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
 
-
+class Rating(models.Model):
+    name = models.CharField(max_length=10)
+    ticket_count = models.IntegerField(blank=True)
+    cash_count = models.IntegerField(blank=True)
+    charge_support_benefit = models.IntegerField(blank=True)
+    rating_achieve_benefit = models.IntegerField(blank=True)
+    happy_day_benefit = models.IntegerField(blank=True)
+    hammer_benefit = models.IntegerField(blank=True)
+    birthday_benefit = models.IntegerField(blank=True)
