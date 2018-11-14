@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'members',
     'cashes',
     'phonenumber_field',
+    'use_point',
 
     'django.contrib.admin',
     'django.contrib.auth',
