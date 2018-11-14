@@ -9,9 +9,12 @@ django = "*"
 django-storages = "*"
 "psycopg2-binary" = "*"
 pillow = "*"
+django-phonenumber-field = "*"
+phonenumbers = "*"
 
 [dev-packages]
 awsebcli = "*"
+ipython = "*"
 
 [requires]
 python_version = "3.6"
