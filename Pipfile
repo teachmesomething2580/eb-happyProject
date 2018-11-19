@@ -11,6 +11,7 @@ django-storages = "*"
 pillow = "*"
 django-phonenumber-field = "*"
 phonenumbers = "*"
+djangorestframework = "*"
 
 [dev-packages]
 awsebcli = "*"
