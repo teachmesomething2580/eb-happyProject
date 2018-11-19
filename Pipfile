@@ -12,6 +12,7 @@ pillow = "*"
 django-phonenumber-field = "*"
 phonenumbers = "*"
 djangorestframework = "*"
+requests = "*"
 
 [dev-packages]
 awsebcli = "*"
