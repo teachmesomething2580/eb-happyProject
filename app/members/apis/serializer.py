@@ -1,5 +1,6 @@
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
+from rest_framework.authtoken.models import Token
 
 
 class DynamicUserSerizlier(serializers.ModelSerializer):
@@ -30,3 +31,25 @@ class UserSerializer(DynamicUserSerizlier):
             'hammer',
             'happy_cash',
         )
+
+
+class UserAuthTokenSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = None
+
+    def validate(self, attrs):
+        self.user = authenticate(username=attrs['username'], password=attrs['password'])
+
+        if not self.user:
+            raise serializers.ValidationError('유저 정보가 잘못되었습니다.')
+        return attrs
+
+    def to_representation(self, instance):
+        token = Token.objects.get_or_create(user=self.user)[0]
+        return {
+            'token': token.key,
+        }
