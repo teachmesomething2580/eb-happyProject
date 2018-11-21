@@ -5,6 +5,20 @@ from phonenumber_field.modelfields import PhoneNumberField
 from members.manager import UserAdminManager, UserNormalManager
 
 
+class Rating(models.Model):
+    name = models.CharField(max_length=10)
+    ticket_count = models.IntegerField()
+    cash_count = models.IntegerField()
+    charge_support_benefit = models.IntegerField(blank=True, null=True)
+    rating_achieve_benefit = models.IntegerField(blank=True, null=True)
+    happy_day_benefit = models.IntegerField(blank=True, null=True)
+    hammer_benefit = models.IntegerField(blank=True)
+    birthday_benefit = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
 class User(AbstractUser):
     phone = PhoneNumberField(unique=True)
     email = models.EmailField(unique=True)
@@ -33,14 +47,3 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
-
-class Rating(models.Model):
-    name = models.CharField(max_length=10)
-    ticket_count = models.IntegerField(blank=True)
-    cash_count = models.IntegerField(blank=True)
-    charge_support_benefit = models.IntegerField(blank=True)
-    rating_achieve_benefit = models.IntegerField(blank=True)
-    happy_day_benefit = models.IntegerField(blank=True)
-    hammer_benefit = models.IntegerField(blank=True)
-    birthday_benefit = models.IntegerField(blank=True)
