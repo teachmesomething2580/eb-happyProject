@@ -2,6 +2,21 @@ from django.contrib.auth import get_user_model, authenticate
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
+from members.models import Rating
+
+
+class RatingSerializer(serializers.ModelSerializer):
+    name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Rating
+        exclude = (
+            'rating_choices_name',
+        )
+
+    def get_name(self, obj):
+        return obj.get_rating_choices_name_display()
+
 
 class DynamicUserSerizlier(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
@@ -20,6 +35,8 @@ class DynamicUserSerizlier(serializers.ModelSerializer):
 
 
 class UserSerializer(DynamicUserSerizlier):
+    rating = RatingSerializer()
+
     class Meta:
         model = get_user_model()
         fields = (
@@ -31,6 +48,7 @@ class UserSerializer(DynamicUserSerizlier):
             'hammer',
             'happy_cash',
         )
+        depth = 1
 
 
 class UserAuthTokenSerializer(serializers.Serializer):
