@@ -18,14 +18,14 @@ class RatingSerializer(serializers.ModelSerializer):
         return obj.get_rating_choices_name_display()
 
 
-class DynamicUserSerizlier(serializers.ModelSerializer):
+class DynamicUserSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         """
         User 모델을 Dynamic하게 정보를 사용하기 위해 BaseSerializer를 작성
         """
 
         fields = kwargs.pop('fields', None)
-        super(DynamicUserSerizlier, self).__init__(*args, **kwargs)
+        super(DynamicUserSerializer, self).__init__(*args, **kwargs)
 
         if fields is not None:
             allowed = set(fields)
@@ -34,7 +34,7 @@ class DynamicUserSerizlier(serializers.ModelSerializer):
                 self.fields.pop(field_name)
 
 
-class UserSerializer(DynamicUserSerizlier):
+class UserSerializer(DynamicUserSerializer):
     rating = RatingSerializer()
 
     class Meta:

@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from members.apis.serializer import UserSerializer, UserAuthTokenSerializer
-from members.permissions import IsUserAdmin
+from members.apis.permissions import IsUserAdmin
 
 User = get_user_model()
 
