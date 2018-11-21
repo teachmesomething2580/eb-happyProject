@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
-from members.manager import MyUserManager
+from members.manager import UserAdminManager, UserNormalManager
 
 
 class User(AbstractUser):
@@ -25,7 +25,8 @@ class User(AbstractUser):
     happy_cash = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    objects = MyUserManager()
+    adminManager = UserAdminManager()
+    normalManager = UserNormalManager()
 
     def __str__(self):
         return self.username
