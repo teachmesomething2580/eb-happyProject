@@ -45,7 +45,7 @@ class Hammer(DefaultCash):
             **kwargs
         )
 
-        user = kwargs.get('user')
+        user = kwargs.get('user_id')
         amount = kwargs.get('amount')
 
         hammer.save()

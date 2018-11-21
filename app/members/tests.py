@@ -7,7 +7,7 @@ User = get_user_model()
 class UserModelTest(TestCase):
     # 유저 생성
     def setUp(self):
-        user = User.objects.create_user(
+        user = User.normalManager.create_user(
             username='example1',
             password='asd',
             phone='+8201055555555',

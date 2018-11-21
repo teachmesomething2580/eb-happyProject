@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+
 class DynamicUserSerizlier(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         """
@@ -29,4 +30,3 @@ class UserSerializer(DynamicUserSerizlier):
             'hammer',
             'happy_cash',
         )
-        depth = 1
