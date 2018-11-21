@@ -6,7 +6,19 @@ from members.manager import UserAdminManager, UserNormalManager
 
 
 class Rating(models.Model):
-    name = models.CharField(max_length=10)
+    RATING_CHOICES = (
+        ('1', '루키몽'),
+        ('2', '실버몽'),
+        ('3', '골드몽'),
+        ('4', '파워몽'),
+        ('5', '슈퍼몽')
+    )
+
+    rating_choices_name = models.CharField(
+        choices=RATING_CHOICES,
+        max_length=1,
+        unique=True,
+    )
     ticket_count = models.IntegerField()
     cash_count = models.IntegerField()
     charge_support_benefit = models.IntegerField(blank=True, null=True)
@@ -16,7 +28,7 @@ class Rating(models.Model):
     birthday_benefit = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return self.rating_choices_name
 
 
 class User(AbstractUser):

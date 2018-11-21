@@ -7,7 +7,7 @@ class UserIntegrationManager(UserManager):
     def create_user(self, username, email=None, password=None, **extra_fields):
         from members.models import Rating
 
-        extra_fields['rating'] = Rating.objects.filter(name='루키몽')[0]
+        extra_fields['rating'] = Rating.objects.get(rating_choices_name='1')
         user = super().create_user(username, email, password, **extra_fields)
 
         # 회원가입시 500 Hammer 증정
