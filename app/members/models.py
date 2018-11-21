@@ -38,7 +38,7 @@ class User(AbstractUser):
     sns_agree = models.BooleanField(default=False)
     email_agree = models.BooleanField(default=False)
     online_available_use_category_limit = models.ManyToManyField(
-        'use_point.Category',
+        'use_point.UsePointCategory',
     )
     rating = models.ForeignKey(
         'members.Rating',

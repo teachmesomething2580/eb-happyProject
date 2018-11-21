@@ -7,27 +7,36 @@ class UsePoint(models.Model):
         max_length=50,
     )
     category = models.ForeignKey(
-        'Category',
+        'UsePointCategory',
         on_delete=models.CASCADE,
     )
     like_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         blank=True,
     )
-    is_fee = models.BooleanField(default=False)
-    is_import_point = models.BooleanField(default=False)
+    where_to_use = models.ForeignKey(
+        'Usage',
+        on_delete=models.CASCADE,
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     site = models.TextField()
     shop_image = models.ImageField(
         upload_to='shop_image',
         # for Debug
         blank=True,
+        null=True,
     )
-    month_pay_limit = models.IntegerField()
-    available_pay_limit = models.IntegerField()
 
     def __str__(self):
         return self.name
+
+
+class Usage(models.Model):
+    is_online = models.BooleanField(default=False)
+    is_fee = models.BooleanField(default=False)
+    is_import_point = models.BooleanField(default=False)
+    month_pay_limit = models.IntegerField(default=0)
+    available_pay_limit = models.IntegerField(default=0)
 
 
 class GiftCardType(models.Model):
@@ -58,7 +67,7 @@ class GiftCard(models.Model):
     )
 
 
-class Category(models.Model):
+class UsePointCategory(models.Model):
     name = models.CharField(max_length=5)
 
     def __str__(self):
