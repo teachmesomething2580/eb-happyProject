@@ -16,11 +16,6 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ROOT_DIR = os.path.dirname(BASE_DIR)
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
-STATIC_DIR = os.path.join(BASE_DIR, 'static')
-
-STATICFILES_DIRS = [
-    STATIC_DIR,
-]
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRETS_DIR = os.path.join(ROOT_DIR, '.secrets')
@@ -30,13 +25,9 @@ SECRET_KEY = SECRET_JSON['SECRET_KEY']
 # FOR STATIC
 STATIC_URL = '/static/'
 
-# FOR AMAZONSETTINGS
-DEFAULT_FILE_STORAGE = 'config.storages.MediaClass'
-AWS_ACCESS_KEY_ID = SECRET_JSON['AWS_ACCESS_KEY_ID']
-AWS_SECRET_ACCESS_KEY = SECRET_JSON['AWS_SECRET_ACCESS_KEY']
-AWS_S3_SIGNATURE_VERSION = 's3v4'
-AWS_S3_REGION_NAME = 'ap-northeast-2'
-
+# FOR MEDIA
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 
 AUTH_USER_MODEL = 'members.User'
 # Application definition
