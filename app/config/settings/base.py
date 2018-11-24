@@ -36,7 +36,10 @@ INSTALLED_APPS = [
     'members',
     'cashes',
     'phonenumber_field',
+    'giftcard',
     'use_point',
+
+    'corsheaders',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -69,6 +72,8 @@ REST_FRAMEWORK = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -78,6 +83,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'config.urls'
+
+CORS_ORIGIN_WHITELIST = (
+    '127.0.0.1:7555',
+)
 
 TEMPLATES = [
     {
