@@ -4,7 +4,7 @@ from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from members.apis.serializer import UserSerializer, UserAuthTokenSerializer
+from members.apis.serializer import UserProfileSerializer, UserAuthTokenSerializer, UserCreateSerializer
 from members.apis.permissions import IsUserAdmin
 
 User = get_user_model()
@@ -20,7 +20,7 @@ class AuthTokenView(APIView):
 
 class UserListGenericAPIView(generics.ListAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserProfileSerializer
     permission_classes = (
         permissions.IsAuthenticated,
         IsUserAdmin,
@@ -38,7 +38,7 @@ class UserListGenericAPIView(generics.ListAPIView):
 
 class UserRetrieveGenericAPIView(generics.RetrieveAPIView):
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserProfileSerializer
 
     def get_serializer(self, *args, **kwargs):
         serializer_class = self.get_serializer_class()
@@ -63,3 +63,8 @@ class UserRetrieveGenericAPIView(generics.RetrieveAPIView):
             raise PermissionDenied()
 
         return user
+
+
+class UserCreateGenericAPIView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer

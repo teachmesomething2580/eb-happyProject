@@ -1,8 +1,11 @@
 from django.contrib.auth import get_user_model, authenticate
+from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
 from members.models import Rating
+
+User = get_user_model()
 
 
 class RatingSerializer(serializers.ModelSerializer):
@@ -34,11 +37,14 @@ class DynamicUserSerializer(serializers.ModelSerializer):
                 self.fields.pop(field_name)
 
 
-class UserSerializer(DynamicUserSerializer):
+class UserProfileSerializer(DynamicUserSerializer):
+    """
+    유저 정보를 가져오기 위한 Serializer
+    """
     rating = RatingSerializer()
 
     class Meta:
-        model = get_user_model()
+        model = User
         fields = (
             'pk',
             'username',
@@ -52,6 +58,9 @@ class UserSerializer(DynamicUserSerializer):
 
 
 class UserAuthTokenSerializer(serializers.Serializer):
+    """
+    유저 토큰을 저장하기위한 Serializer
+    """
     username = serializers.CharField()
     password = serializers.CharField()
 
@@ -71,3 +80,36 @@ class UserAuthTokenSerializer(serializers.Serializer):
         return {
             'token': token.key,
         }
+
+
+class UserCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'username',
+            'password',
+            'phone',
+            'email',
+            'name',
+            'sns_agree',
+            'email_agree',
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = None
+
+    def create(self, validated_data):
+        user = super().create(validated_data)
+        user.set_password(validated_data['password'])
+        self.user = user
+        return user
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data.pop('password')
+        data.pop('sns_agree')
+        data.pop('email_agree')
+        token = Token.objects.get_or_create(user=self.user)[0]
+        data['token'] = token.key
+        return data
