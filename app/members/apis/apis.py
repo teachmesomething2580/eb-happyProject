@@ -4,13 +4,15 @@ from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from members.apis.serializer import UserProfileSerializer, UserAuthTokenSerializer, UserCreateSerializer
+from members.apis.serializer import UserProfileSerializer, UserAuthTokenSerializer, UserCreateSerializer, \
+    DeliverySerializer, RatingSerializer
 from members.apis.permissions import IsUserAdmin
+from members.models import Delivery, Rating
 
 User = get_user_model()
 
 
-class AuthTokenView(APIView):
+class UserAuthTokenView(APIView):
     def post(self, request):
         serializer = UserAuthTokenSerializer(data=request.data)
         if serializer.is_valid():
@@ -68,3 +70,31 @@ class UserRetrieveGenericAPIView(generics.RetrieveAPIView):
 class UserCreateGenericAPIView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
+
+
+class DeliveryListCreateGenericAPIView(generics.ListCreateAPIView):
+    queryset = Delivery.objects.all()
+    serializer_class = DeliverySerializer
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        return queryset.filter(user=user)
+
+
+class RatingListGenericAPIView(generics.ListAPIView):
+    """
+    Rating List API
+    """
+    queryset = Rating.objects.all()
+    serializer_class = RatingSerializer
+    permission_classes = (
+        permissions.IsAuthenticated,
+        IsUserAdmin,
+    )

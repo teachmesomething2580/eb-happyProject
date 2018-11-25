@@ -3,12 +3,15 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
-from members.models import Rating
+from members.models import Rating, Delivery
 
 User = get_user_model()
 
 
 class RatingSerializer(serializers.ModelSerializer):
+    """
+    Rating 정보들을 가져오기 위한 Serializer
+    """
     name = serializers.SerializerMethodField()
 
     class Meta:
@@ -83,6 +86,9 @@ class UserAuthTokenSerializer(serializers.Serializer):
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
+    """
+    유저 생성을 위한 Serializer
+    """
     class Meta:
         model = User
         fields = (
@@ -100,10 +106,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         self.user = None
 
     def create(self, validated_data):
-        user = super().create(validated_data)
-        user.set_password(validated_data['password'])
-        self.user = user
-        return user
+        self.user = User.normalManager.create_user(**validated_data)
+        return self.user
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
@@ -113,3 +117,24 @@ class UserCreateSerializer(serializers.ModelSerializer):
         token = Token.objects.get_or_create(user=self.user)[0]
         data['token'] = token.key
         return data
+
+
+class DeliverySerializer(serializers.ModelSerializer):
+    """
+    배달 정보 저장
+    """
+    class Meta:
+        model = Delivery
+        fields = (
+            'postcode',
+            'address',
+            'detail',
+            'user',
+        )
+        read_only_fields = (
+            'user',
+        )
+
+    def create(self, validated_data):
+        d, _ = Delivery.objects.get_or_create(**validated_data)
+        return d

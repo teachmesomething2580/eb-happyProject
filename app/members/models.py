@@ -59,3 +59,13 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+
+class Delivery(models.Model):
+    postcode = models.CharField(max_length=5)
+    address = models.TextField()
+    detail = models.TextField()
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+    )
