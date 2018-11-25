@@ -25,5 +25,10 @@ STATICFILES_DIRS = [
     STATIC_DIR,
 ]
 
+# CORS ALLOW WHITELIST
+CORS_ORIGIN_WHITELIST = (
+    '127.0.0.1:7555',
+)
+
 # dev tools
 INSTALLED_APPS.append('django_extensions')

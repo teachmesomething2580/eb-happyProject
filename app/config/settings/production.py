@@ -21,6 +21,11 @@ AWS_S3_REGION_NAME = 'ap-northeast-2'
 WSGI_APPLICATION = 'config.wsgi.production.application'
 
 
+# CORS ALLOW WHITELIST
+CORS_ORIGIN_WHITELIST = (
+    'ashe.kr',
+)
+
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
