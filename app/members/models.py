@@ -61,7 +61,7 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
 
-class Delivery(models.Model):
+class Address(models.Model):
     postcode = models.CharField(max_length=5)
     address = models.TextField()
     detail = models.TextField()

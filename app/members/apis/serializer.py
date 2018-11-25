@@ -3,7 +3,7 @@ from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 
-from members.models import Rating, Delivery
+from members.models import Rating, Address
 
 User = get_user_model()
 
@@ -121,10 +121,10 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
 class DeliverySerializer(serializers.ModelSerializer):
     """
-    배달 정보 저장
+    배달 주소 정보 저장
     """
     class Meta:
-        model = Delivery
+        model = Address
         fields = (
             'postcode',
             'address',
@@ -136,5 +136,5 @@ class DeliverySerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        d, _ = Delivery.objects.get_or_create(**validated_data)
+        d, _ = Address.objects.get_or_create(**validated_data)
         return d

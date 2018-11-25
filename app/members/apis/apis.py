@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from members.apis.serializer import UserProfileSerializer, UserAuthTokenSerializer, UserCreateSerializer, \
     DeliverySerializer, RatingSerializer
 from members.apis.permissions import IsUserAdmin
-from members.models import Delivery, Rating
+from members.models import Address, Rating
 
 User = get_user_model()
 
@@ -73,7 +73,7 @@ class UserCreateGenericAPIView(generics.CreateAPIView):
 
 
 class DeliveryListCreateGenericAPIView(generics.ListCreateAPIView):
-    queryset = Delivery.objects.all()
+    queryset = Address.objects.all()
     serializer_class = DeliverySerializer
     permission_classes = (
         permissions.IsAuthenticated,
