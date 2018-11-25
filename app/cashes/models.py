@@ -1,79 +1,70 @@
 from django.conf import settings
 from django.db import models, transaction
 
+from cashes.manager import CashManager
 
-class DefaultCash(models.Model):
+
+class Cash(models.Model):
+    objects = CashManager()
+
     USE_OR_SAVE_CHOICES = (
         ('u', 'use'),
         ('s', 'save'),
+    )
+    HAMMER_OR_HAPPY = (
+        ('hc', 'HappyCash'),
+        ('hm', 'Hammer'),
     )
 
     content = models.CharField(
         max_length=20,
     )
-    amount = models.IntegerField()
+    amount = models.PositiveIntegerField()
+    hammer_or_cash = models.CharField(
+        choices=HAMMER_OR_HAPPY,
+        max_length=2,
+    )
     use_or_save = models.CharField(
         choices=USE_OR_SAVE_CHOICES,
         max_length=1,
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    user_id = models.ForeignKey(
+    user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name="%(class)s_user_id",
+        related_name="%(class)s_user",
         on_delete=models.CASCADE,
     )
 
-    class Meta:
-        abstract = True
+    def __str__(self):
+        return self.user.username + "님에게 " + self.get_hammer_or_cash_display() + "를 " + str(self.amount) + "만큼 삽입"
 
-
-class Hammer(DefaultCash):
     @staticmethod
     @transaction.atomic
-    def give_hammer_point(**kwargs):
-        """
-        amount 만큼 사용자의 hammer를 늘려주는 메서드,
-        로그를 남기기위해
-        content, amount, use_or_save, user_id 필드를 모두 채운 Hammer 객체도 생성된다.
+    def give_point(**kwargs):
 
-        :param user:
-        :param amount:
-        :return:
-        """
-
-        hammer = Hammer(
-            **kwargs
+        cash = Cash(
+            **kwargs,
         )
 
-        user = kwargs.get('user_id')
-        amount = kwargs.get('amount')
+        user = kwargs.pop('user')
+        amount = int(kwargs.pop('amount'))
+        hammer_or_cash = cash.hammer_or_cash
 
-        hammer.save()
-        user.hammer += amount
+        if cash.use_or_save == 'u':
+            if user.happy_cash - amount < 0:
+                raise ValueError('잔액이 없습니다.')
+
+            if hammer_or_cash == 'hm':
+                user.hammer -= amount
+            else:
+                user.happy_cash -= amount
+        else:
+            if hammer_or_cash == 'hm':
+                user.hammer += amount
+            else:
+                user.happy_cash += amount
+
+        cash.save()
         user.save()
 
-
-class HappyCash(DefaultCash):
-    @staticmethod
-    @transaction.atomic
-    def give_happy_cash_point(user, amount):
-        """
-        amount 만큼 사용자의 happyCash를 늘려주는 메서드,
-        로그를 남기기 위해
-        content, amount, use_or_save, user_id 필드를 모두 채운 HappyCash 객체도 생성된다.
-
-        :param user:
-        :param amount:
-        :return:
-        """
-
-        happy_cash = HappyCash(
-            content='회원가입 첫 500원',
-            amount=amount,
-            use_or_save='s',
-            user_id=user
-        )
-
-        happy_cash.save()
-        user.happy_cash += amount
-        user.save()
+        return cash

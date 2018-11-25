@@ -39,6 +39,7 @@ class User(AbstractUser):
     email_agree = models.BooleanField(default=False)
     online_available_use_category_limit = models.ManyToManyField(
         'use_point.UsePointCategory',
+        blank=True,
     )
     rating = models.ForeignKey(
         'members.Rating',

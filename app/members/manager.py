@@ -1,6 +1,6 @@
 from django.contrib.auth.models import UserManager
 
-from cashes.models import Hammer
+from cashes.models import Cash
 
 
 class UserIntegrationManager(UserManager):
@@ -11,11 +11,12 @@ class UserIntegrationManager(UserManager):
         user = super().create_user(username, email, password, **extra_fields)
 
         # 회원가입시 500 Hammer 증정
-        Hammer.give_hammer_point(
+        Cash.objects.create(
             content='회원가입 500원',
             amount=500,
             use_or_save='s',
-            user_id=user,
+            hammer_or_cash='hm',
+            user=user,
         )
         return user
 
