@@ -17,7 +17,7 @@ class Cash(models.Model):
     )
 
     content = models.CharField(
-        max_length=20,
+        max_length=100,
     )
     amount = models.PositiveIntegerField()
     hammer_or_cash = models.CharField(

@@ -1,20 +1,63 @@
-from rest_framework import generics, permissions
+import json
 
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from cashes.apis.backends import IamPortAPI
 from cashes.apis.serializer import CashPurchaseSerializer
 from cashes.models import Cash
 
 
-class CashPurchaseListCreateView(generics.ListCreateAPIView):
+class CashPurchaseListView(generics.ListAPIView):
     queryset = Cash.objects.all()
     serializer_class = CashPurchaseSerializer
     permission_classes = (
         permissions.IsAuthenticated,
     )
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
-        return queryset.filter(user=user)
+        h = self.request.query_params.get('h', 'hc')
+        return queryset.filter(user=user, hammer_or_cash=h)
+
+
+class CashPurchaseGetRequest(APIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+
+    def post(self, request):
+        try:
+            imp_uid = request.data['response']['imp_uid']
+            merchant_uid = request.data['response']['merchant_uid']
+            browser_amount = request.data['response']['paid_amount']
+        except KeyError:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        result = IamPortAPI().inquiry_purchase_info(imp_uid, browser_amount)
+        result_status = result['status']
+
+        if result_status == 'success':
+            data = {
+                'content': merchant_uid,
+                'amount': browser_amount,
+                'hammer_or_cash': 'hc',
+                'use_or_save': 's',
+            }
+            serializer = CashPurchaseSerializer(data=data)
+
+            if serializer.is_valid():
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # serailizer 오류시
+            IamPortAPI().purchase_cancel(imp_uid)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # 위변조시
+            error_res = {
+                'error': result
+            }
+            IamPortAPI().purchase_cancel(imp_uid)
+            return Response(error_res, status=status.HTTP_400_BAD_REQUEST)
