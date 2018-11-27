@@ -31,6 +31,7 @@ class UsePoint(models.Model):
 
     class Meta:
         unique_together = ('name', 'is_online')
+        ordering = ['pk']
 
     def __str__(self):
         return self.name
