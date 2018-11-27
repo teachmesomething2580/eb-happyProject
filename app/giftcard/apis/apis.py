@@ -1,8 +1,9 @@
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from cashes.apis.backends import IamPortAPI
+from cashes.apis.pagination import CashResultSetPagination
 from cashes.apis.permissions import IsAuthenticatedWithPurchase
 from giftcard.apis.serializer import GiftCardTypeSerializer, EmailOrderGiftCardSerializer, \
     SMSOrderGiftCardSerializer, AddressOrderGiftCardSerializer, OrderGiftCardSerializer
@@ -67,6 +68,10 @@ class OrderGiftCardPurchaseView(APIView):
 class OrderGiftCardListView(generics.ListAPIView):
     queryset = OrderGiftCard.objects.all()
     serializer_class = OrderGiftCardSerializer
+    pagination_class = CashResultSetPagination
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
 
     def get_queryset(self):
         queryset = super().get_queryset()

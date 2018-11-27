@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from cashes.apis.backends import IamPortAPI
+from cashes.apis.pagination import CashResultSetPagination
 from cashes.apis.permissions import IsAuthenticatedWithPurchase
 from cashes.apis.serializer import CashPurchaseSerializer
 from cashes.models import Cash
@@ -16,6 +17,7 @@ from giftcard.models import OrderGiftCard, GiftCardType
 class CashPurchaseListView(generics.ListAPIView):
     queryset = Cash.objects.all()
     serializer_class = CashPurchaseSerializer
+    pagination_class = CashResultSetPagination
     permission_classes = (
         permissions.IsAuthenticated,
     )
