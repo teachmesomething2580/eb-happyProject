@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from cashes.apis.backends import IamPortAPI
+from cashes.apis.permissions import IsAuthenticatedWithPurchase
 from cashes.apis.serializer import CashPurchaseSerializer
 from cashes.models import Cash
 
@@ -25,17 +26,20 @@ class CashPurchaseListView(generics.ListAPIView):
 
 class CashPurchaseGetRequest(APIView):
     permission_classes = (
-        permissions.IsAuthenticated,
+        IsAuthenticatedWithPurchase,
     )
 
     def post(self, request):
+        # 필수로 가져와야하는 항목을 가져온다.
+        imp_uid = request.data['response']['imp_uid']
         try:
-            imp_uid = request.data['response']['imp_uid']
             merchant_uid = request.data['response']['merchant_uid']
             browser_amount = request.data['response']['paid_amount']
         except KeyError:
+            IamPortAPI().purchase_cancel(imp_uid)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        # IamPort의 access_token을 생성하고 위변조를 검사한다.
         result = IamPortAPI().inquiry_purchase_info(imp_uid, browser_amount)
         result_status = result['status']
 

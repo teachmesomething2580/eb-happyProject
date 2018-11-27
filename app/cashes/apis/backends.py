@@ -9,6 +9,10 @@ class IamPortAPI:
         self.access_token = None
 
     def get_access_token(self):
+        """
+        IamPort 에서 AccessToken을 가져오는 함수
+
+        """
         url = 'https://api.iamport.kr/users/getToken'
         headers = {
             'Content-Type': 'application/json'
@@ -23,6 +27,13 @@ class IamPortAPI:
         return self.access_token
 
     def inquiry_purchase_info(self, imp_uid, browser_amount):
+        """
+        위변조를 검사하는 함수
+
+        :param imp_uid: 결제 코드
+        :param browser_amount: 브라우저에서 요청한 값
+        :return:
+        """
         self.get_access_token()
         url = 'https://api.iamport.kr/payments/'+imp_uid
         headers = {
@@ -40,6 +51,12 @@ class IamPortAPI:
             return {'status': 'forgery', 'message': '위변조 결제시도'}
 
     def purchase_cancel(self, imp_uid):
+        """
+        결제 취소 함수
+
+        :param imp_uid: 결제 코드
+        :return:
+        """
         self.get_access_token()
         url = "https://api.iamport.kr/payments/cancel"
         headers = {
@@ -49,6 +66,3 @@ class IamPortAPI:
             'imp_uid': imp_uid,
         }
         res = requests.post(url, headers=headers, data=data)
-        first = json.loads(res.content)
-        a = 1
-        print(a)
