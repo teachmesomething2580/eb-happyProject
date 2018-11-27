@@ -36,7 +36,41 @@ class Cash(models.Model):
     )
 
     def __str__(self):
-        return self.user.username + "님에게 " + self.get_hammer_or_cash_display() + "를 " + str(self.amount) + "만큼 삽입"
+        return self.user.username + "님에게 " + self.get_hammer_or_cash_display() + "를 " + str(self.amount) + "만큼 " + ('저장' if self.use_or_save == 's' else '사용')
+
+    @staticmethod
+    @transaction.atomic
+    def change_point(**kwargs):
+        user = kwargs.pop('user')
+        amount = int(kwargs.pop('amount'))
+
+        if user.hammer - amount < 0:
+            raise ValueError('잔액이 없습니다.')
+
+        hammer = Cash(
+            content='해머 전환',
+            amount=amount,
+            hammer_or_cash='hm',
+            use_or_save='u',
+            user=user,
+        )
+
+        cash = Cash(
+            content='해머 전환',
+            amount=amount,
+            hammer_or_cash='hc',
+            use_or_save='s',
+            user=user,
+        )
+
+        user.hammer -= amount
+        user.happy_cash += amount
+
+        hammer.save()
+        cash.save()
+        user.save()
+
+        return cash
 
     @staticmethod
     @transaction.atomic

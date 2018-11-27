@@ -73,7 +73,27 @@ class CashPurchaseGetRequest(APIView):
 
 
 class OrderHammerToCash(APIView):
-    pass
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+
+    def post(self, request):
+        try:
+            paid_amount = int(request.data['paid_amount'])
+        except KeyError:
+            return Response(data={'error': 'request Key Error'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if paid_amount < 3000:
+            return Response(data={'detail': '3000원 이하 결제'}, status=status.HTTP_400_BAD_REQUEST)
+
+        cash = Cash().change_point(
+            amount=paid_amount,
+            user=self.request.user,
+        )
+
+        serializer = CashPurchaseSerializer(cash)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 
 class OrderCashToGiftCard(APIView):

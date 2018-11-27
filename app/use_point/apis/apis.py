@@ -12,9 +12,9 @@ class UsePointListGenericAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-        point = self.request.query_params.get('point')
-        if point and point == 'offline':
+        point = self.request.query_params.get('point', 'online')
+        if point == 'offline':
             queryset = queryset.filter(is_online=False)
-        elif not point or point == 'online':
+        elif point == 'online':
             queryset = queryset.filter(is_online=True)
         return queryset
