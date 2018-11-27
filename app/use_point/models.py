@@ -6,8 +6,9 @@ class UsePoint(models.Model):
     name = models.CharField(
         max_length=50,
     )
-    category = models.ManyToManyField(
+    category = models.ForeignKey(
         'UsePointCategory',
+        on_delete=models.CASCADE,
     )
     like_users = models.ManyToManyField(
         settings.AUTH_USER_MODEL,

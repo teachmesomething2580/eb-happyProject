@@ -4,8 +4,10 @@ import string
 from django.contrib.auth import get_user_model
 from django.db import models, transaction
 from phonenumber_field.modelfields import PhoneNumberField
+from rest_framework import serializers
 
 from cashes.apis.backends import IamPortAPI
+from cashes.models import Cash
 from members.models import Address
 
 User = get_user_model()
@@ -103,8 +105,19 @@ class OrderGiftCard(models.Model):
 
     @staticmethod
     @transaction.atomic
-    def create_order(serializer_class, extra_field, imp_uid, merchant_uid, purchase_list, user):
+    def create_order(serializer_class, extra_field, imp_uid, merchant_uid, purchase_list, user, paid_amount):
         serializer_lists = []
+
+        if imp_uid is None:
+            if user.happy_cash <= paid_amount:
+                raise serializers.ValidationError('잔액이 모자랍니다.')
+            Cash.give_point(
+                content=merchant_uid,
+                amount=paid_amount,
+                hammer_or_cash='hc',
+                use_or_save='u',
+                user=user,
+            )
 
         # 여러 Email을 가지고 주문하였기 때문에
         for purchase in purchase_list:
@@ -123,8 +136,7 @@ class OrderGiftCard(models.Model):
                     # GiftCard 가져옴
                     g = GiftCardType.objects.get(gift_card_unique_id=purchase_info['type'])
                     if g is None:
-                        # Error (해당 GiftCard 종류가 없음)
-                        pass
+                        raise serializers.ValidationError('해당 GiftCard 종류가 존재하지 않습니다.')
 
                     o = OrderGiftCardAmount.objects.create(
                         gift_card=g,
@@ -143,8 +155,9 @@ class OrderGiftCard(models.Model):
                 serializer_lists.append(order_gift_card)
             else:
                 # serailizer 오류시
-                IamPortAPI().purchase_cancel(imp_uid)
-                return serializer.errors
+                if imp_uid:
+                    IamPortAPI().purchase_cancel(imp_uid)
+                raise serializers.ValidationError('결제 시 오류')
         return serializer_lists
 
 
