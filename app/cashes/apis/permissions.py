@@ -10,5 +10,5 @@ class IsAuthenticatedWithPurchase(permissions.BasePermission):
         """
         is_authenticated = request.user and request.user.is_authenticated
         if is_authenticated is False:
-            IamPortAPI().purchase_cancel(request.data['response']['imp_uid'])
+            IamPortAPI().purchase_cancel(request.data['imp_uid'])
         return is_authenticated

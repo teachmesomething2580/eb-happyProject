@@ -31,22 +31,22 @@ class CashPurchaseGetRequest(APIView):
 
     def post(self, request):
         # 필수로 가져와야하는 항목을 가져온다.
-        imp_uid = request.data['response']['imp_uid']
+        imp_uid = request.data['imp_uid']
         try:
-            merchant_uid = request.data['response']['merchant_uid']
-            browser_amount = request.data['response']['paid_amount']
+            merchant_uid = request.data['merchant_uid']
+            paid_amount = request.data['paid_amount']
         except KeyError:
             IamPortAPI().purchase_cancel(imp_uid)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         # IamPort의 access_token을 생성하고 위변조를 검사한다.
-        result = IamPortAPI().inquiry_purchase_info(imp_uid, browser_amount)
+        result = IamPortAPI().inquiry_purchase_info(imp_uid, paid_amount)
         result_status = result['status']
 
         if result_status == 'success':
             data = {
                 'content': merchant_uid,
-                'amount': browser_amount,
+                'amount': paid_amount,
                 'hammer_or_cash': 'hc',
                 'use_or_save': 's',
             }

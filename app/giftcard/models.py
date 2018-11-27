@@ -1,11 +1,24 @@
-from django.conf import settings
+import random
+import string
+
 from django.contrib.auth import get_user_model
-from django.db import models
+from django.db import models, transaction
 from phonenumber_field.modelfields import PhoneNumberField
 
-from use_point.models import UsePoint
+from cashes.apis.backends import IamPortAPI
+from members.models import Address
 
 User = get_user_model()
+
+
+def increment_giftcard_cnt():
+    last = GiftCardType.objects.last()
+    if not last:
+        return 'gcnt_0000'
+    now = last.gift_card_unique_id
+    gcnt, numbering = now.split('_')
+    add_number = int(numbering) + 1
+    return gcnt + '_' + f'{add_number:0>4}'
 
 
 class GiftCardCategory(models.Model):
@@ -29,6 +42,8 @@ class GiftCardType(models.Model):
         ('m', 'mobile'),
     )
 
+    gift_card_unique_id = models.CharField(max_length=8, default=increment_giftcard_cnt, editable=False)
+
     amount = models.IntegerField()
     is_hotdeal = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
@@ -45,9 +60,31 @@ class GiftCardType(models.Model):
         return str(self.mall_category.name) + ' ' + str(self.amount)+'원권'
 
 
+class PINGiftCard(models.Model):
+    PIN = models.CharField(
+        max_length=30,
+    )
+    is_used = models.BooleanField(default=True)
+    created_in_order = models.ForeignKey(
+        'OrderGiftCardAmount',
+        on_delete=models.CASCADE,
+    )
+
+    @staticmethod
+    def create_pin():
+        PIN = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(18))
+        if PINGiftCard.objects.filter(PIN=PIN, is_used=False):
+            return PINGiftCard.create_pin()
+        return PIN
+
+
 class OrderGiftCardAmount(models.Model):
     gift_card = models.ForeignKey(
         GiftCardType,
+        on_delete=models.CASCADE,
+    )
+    order_gift_card = models.ForeignKey(
+        'OrderGiftCard',
         on_delete=models.CASCADE,
     )
     amount = models.IntegerField()
@@ -58,15 +95,57 @@ class OrderGiftCard(models.Model):
         User,
         on_delete=models.CASCADE,
     )
-    gift_card = models.ForeignKey(
-        OrderGiftCardAmount,
-        on_delete=models.CASCADE,
-    )
     content = models.CharField(
         max_length=100,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=15)
+
+    @staticmethod
+    @transaction.atomic
+    def create_order(serializer_class, extra_field, imp_uid, merchant_uid, purchase_list, user):
+        serializer_lists = []
+
+        # 여러 Email을 가지고 주문하였기 때문에
+        for purchase in purchase_list:
+            data = {
+                'content': merchant_uid,
+                'name': purchase['name'],
+                extra_field: purchase[extra_field],
+            }
+            serializer = serializer_class(data=data)
+
+            if serializer.is_valid():
+                order_gift_card = serializer.save(user=user)
+                for purchase_info in purchase['giftcard_info']:
+                    # OrderGiftCardAmount 생성
+                    amount = purchase_info['amount']
+                    # GiftCard 가져옴
+                    g = GiftCardType.objects.get(gift_card_unique_id=purchase_info['type'])
+                    if g is None:
+                        # Error (해당 GiftCard 종류가 없음)
+                        pass
+
+                    o = OrderGiftCardAmount.objects.create(
+                        gift_card=g,
+                        order_gift_card=order_gift_card,
+                        amount=amount
+                    )
+
+                    # PINGiftCard 생성
+                    for i in amount:
+                        PIN = PINGiftCard.create_pin()
+                        PINGiftCard.objects.create(
+                            PIN=PIN,
+                            is_used=False,
+                            created_in_order=o
+                        )
+                serializer_lists.append(order_gift_card)
+            else:
+                # serailizer 오류시
+                IamPortAPI().purchase_cancel(imp_uid)
+                return serializer.errors
+        return serializer_lists
 
 
 class EmailOrderGiftCard(OrderGiftCard):
@@ -75,3 +154,10 @@ class EmailOrderGiftCard(OrderGiftCard):
 
 class SMSOrderGiftCard(OrderGiftCard):
     phone = PhoneNumberField()
+
+
+class AddressOrderGiftCard(OrderGiftCard):
+    address = models.ForeignKey(
+        Address,
+        on_delete=models.CASCADE,
+    )
