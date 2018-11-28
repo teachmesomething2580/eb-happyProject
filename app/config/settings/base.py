@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'phonenumber_field',
     'giftcard',
     'use_point',
+    'event',
 
     'corsheaders',
 

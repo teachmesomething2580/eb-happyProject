@@ -80,7 +80,7 @@ class Command(BaseCommand):
             try:
                 gc = GiftCardCategory.objects.create(
                     name=site_name,
-                    shop_image='images/shop_image' + img_name,
+                    shop_image='images/shop_image/' + img_name,
                 )
             except IntegrityError:
                 gc = GiftCardCategory.objects.get(name=site_name)

@@ -5,4 +5,5 @@ urlpatterns = [
     path('use-point/', include('use_point.apis.urls')),
     path('cashes/', include('cashes.apis.urls')),
     path('giftcards/', include('giftcard.apis.urls')),
+    path('event/', include('event.apis.urls')),
 ]
