@@ -6,4 +6,5 @@ urlpatterns = [
     path('cashes/', include('cashes.apis.urls')),
     path('giftcards/', include('giftcard.apis.urls')),
     path('event/', include('event.apis.urls')),
+    path('posts/', include('posts.apis.urls')),
 ]

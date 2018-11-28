@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'giftcard',
     'use_point',
     'event',
+    'posts',
 
     'corsheaders',
 
