@@ -41,11 +41,13 @@ class InquiryCreateListAPIView(generics.ListCreateAPIView):
     pagination_class = PostsResultSetPagination
 
     def perform_create(self, serializer):
-        pk = self.request.data.pop('category')
         try:
+            pk = self.request.data.pop('category')
             f = FAQSubCategory.objects.get(pk=pk)
             serializer.save(user=self.request.user, category=f)
         except FAQSubCategory.DoesNotExist:
+            raise serializers.ValidationError({'detail': 'Cateogry가 제공되지 않았거나 잘못된 정보가 전달되었습니다.'})
+        except KeyError:
             raise serializers.ValidationError({'detail': 'Cateogry가 제공되지 않았거나 잘못된 정보가 전달되었습니다.'})
         # Error 발생지점
 

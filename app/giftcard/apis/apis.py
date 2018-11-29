@@ -1,4 +1,4 @@
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status, permissions, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -28,7 +28,7 @@ class OrderGiftCardPurchaseView(APIView):
             paid_amount = request.data['paid_amount']
         except KeyError:
             IamPortAPI().purchase_cancel(imp_uid)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError({'detail': '전달되지 않은 정보로 인해 결제가 취소됩니다.'})
 
         # IamPort의 access_token을 생성하고 위변조를 검사한다.
         result = IamPortAPI().inquiry_purchase_info(imp_uid, paid_amount)
@@ -50,19 +50,15 @@ class OrderGiftCardPurchaseView(APIView):
                 extra_field = ''
                 # 추후 변경성
             else:
-                return
+                raise serializers.ValidationError({'detail': '해당 상품권 배송 방법은 존재하지 않습니다..'})
 
             # 객체 생성
             order = OrderGiftCard.create_order(serializer_class, extra_field, imp_uid, merchant_uid, purchase_list, request.user)
             serializer = serializer_class(order, many=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            # 위변조시
-            error_res = {
-                'error': result
-            }
             IamPortAPI().purchase_cancel(imp_uid)
-            return Response(error_res, status=status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError({'detail': '값이 변조되었습니다.'})
 
 
 class OrderGiftCardListView(generics.ListAPIView):

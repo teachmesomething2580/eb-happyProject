@@ -110,7 +110,7 @@ class OrderGiftCard(models.Model):
 
         if imp_uid is None:
             if user.happy_cash <= paid_amount:
-                raise serializers.ValidationError('잔액이 모자랍니다.')
+                raise serializers.ValidationError({'detail': '잔액이 모자랍니다.'})
             Cash.give_point(
                 content=merchant_uid,
                 amount=paid_amount,
@@ -136,7 +136,7 @@ class OrderGiftCard(models.Model):
                     # GiftCard 가져옴
                     g = GiftCardType.objects.get(gift_card_unique_id=purchase_info['type'])
                     if g is None:
-                        raise serializers.ValidationError('해당 GiftCard 종류가 존재하지 않습니다.')
+                        raise serializers.ValidationError({'detail': '해당 상품권의 종류가 없습니다.'})
 
                     o = OrderGiftCardAmount.objects.create(
                         gift_card=g,
@@ -157,7 +157,7 @@ class OrderGiftCard(models.Model):
                 # serailizer 오류시
                 if imp_uid:
                     IamPortAPI().purchase_cancel(imp_uid)
-                raise serializers.ValidationError('결제 시 오류')
+                    raise serializers.ValidationError({'detail': '결제 정보 생성시 오류가 발생했습니다.'})
         return serializer_lists
 
 

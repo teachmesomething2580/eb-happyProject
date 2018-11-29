@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models, transaction
+from rest_framework import serializers
 
 from cashes.manager import CashManager
 
@@ -45,7 +46,7 @@ class Cash(models.Model):
         amount = int(kwargs.pop('amount'))
 
         if user.hammer - amount < 0:
-            raise ValueError('잔액이 없습니다.')
+            raise serializers.ValidationError({'detail': '잔액이 부족합니다.'})
 
         hammer = Cash(
             content='해머 전환',
@@ -86,7 +87,7 @@ class Cash(models.Model):
 
         if cash.use_or_save == 'u':
             if user.happy_cash - amount < 0:
-                raise ValueError('잔액이 없습니다.')
+                raise serializers.ValidationError({'detail': '잔액이 부족합니다.'})
 
             if hammer_or_cash == 'hm':
                 user.hammer -= amount

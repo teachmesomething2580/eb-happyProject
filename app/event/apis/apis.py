@@ -1,4 +1,4 @@
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, serializers
 from rest_framework.exceptions import ValidationError
 
 from event.apis.pagination import EventResultSetPagination
@@ -13,7 +13,7 @@ class EventCreateListAPIView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         if self.request.user.is_staff:
-            raise ValidationError('관리자가 아닙니다.')
+            raise serializers.ValidationError({'detail': '관리자가 아닙니다.'})
         serializer.save()
 
     def get_queryset(self):

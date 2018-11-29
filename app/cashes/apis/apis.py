@@ -42,7 +42,7 @@ class CashPurchaseGetRequest(APIView):
             paid_amount = request.data['paid_amount']
         except KeyError:
             IamPortAPI().purchase_cancel(imp_uid)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError({'detail': '전달되지 않은 정보로 인해 결제가 취소됩니다.'})
 
         # IamPort의 access_token을 생성하고 위변조를 검사한다.
         result = IamPortAPI().inquiry_purchase_info(imp_uid, paid_amount)
@@ -60,16 +60,12 @@ class CashPurchaseGetRequest(APIView):
             if serializer.is_valid():
                 serializer.save(user=request.user)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
-            # serailizer 오류시
+            # Serializer 실패
             IamPortAPI().purchase_cancel(imp_uid)
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError({'detail': '결제 정보 생성시 오류가 발생했습니다..'})
         else:
-            # 위변조시
-            error_res = {
-                'error': result
-            }
             IamPortAPI().purchase_cancel(imp_uid)
-            return Response(error_res, status=status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError({'detail': '값이 변조되었습니다.'})
 
 
 class OrderHammerToCash(APIView):
@@ -81,10 +77,10 @@ class OrderHammerToCash(APIView):
         try:
             paid_amount = int(request.data['paid_amount'])
         except KeyError:
-            return Response(data={'error': 'request Key Error'}, status=status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError({'detail': '브라우저의 결제 정보가 포함되지 않았습니다..'})
 
         if paid_amount < 3000:
-            return Response(data={'detail': '3000원 이하 결제'}, status=status.HTTP_400_BAD_REQUEST)
+            raise serializers.ValidationError({'detail': '3000 해머 이하의 값은 바꿀 수 없습니다..'})
 
         cash = Cash().change_point(
             amount=paid_amount,
