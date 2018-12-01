@@ -34,10 +34,26 @@ class OrderGiftCardPurchaseView(APIView):
         result = IamPortAPI().inquiry_purchase_info(imp_uid, paid_amount)
         result_status = result['status']
 
+        full_amount = 0
+
         if result_status == 'success':
             purchase = request.data['purchase']
             delivery_type = purchase['delivery_type']
             purchase_list = purchase['purchase_list']
+
+            # 상품권 개수 변조 확인
+            for p in purchase_list:
+                for price in p['giftcard_info']:
+                    amount = price['amount']
+                    g = GiftCardType.objects.get(gift_card_unique_id=price['type'])
+                    if g is None:
+                        IamPortAPI().purchase_cancel(imp_uid)
+                        raise serializers.ValidationError('해당 GiftCard 종류가 존재하지 않습니다.')
+                    full_amount += g.amount * int(amount)
+
+            if full_amount != paid_amount:
+                IamPortAPI().purchase_cancel(imp_uid)
+                raise serializers.ValidationError('값이 변조되었습니다.')
 
             if delivery_type == 'email':
                 serializer_class = EmailOrderGiftCardSerializer

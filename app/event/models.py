@@ -25,3 +25,8 @@ class Event(models.Model):
     photo = models.ImageField(
         upload_to='images/event',
     )
+    banner = models.ImageField(
+        upload_to='images/event',
+        blank=True,
+        null=True,
+    )

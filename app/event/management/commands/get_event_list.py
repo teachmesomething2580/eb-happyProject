@@ -91,7 +91,7 @@ class Command(BaseCommand):
 
                 try:
                     event = Event.objects.create(
-                        photo='images/event' + img_name,
+                        photo='images/event/' + img_name,
                         tag=tag,
                         category=category,
                         title=title,

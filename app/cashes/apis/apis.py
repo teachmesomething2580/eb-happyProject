@@ -110,6 +110,7 @@ class OrderCashToGiftCard(APIView):
 
         full_amount = 0
 
+        # 상품권 개수 변조 확인
         for p in purchase_list:
             for price in p['giftcard_info']:
                 amount = price['amount']

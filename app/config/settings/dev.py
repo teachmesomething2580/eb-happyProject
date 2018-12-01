@@ -28,6 +28,7 @@ STATICFILES_DIRS = [
 # CORS ALLOW WHITELIST
 CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:7555',
+    'localhost:8080',
 )
 
 # dev tools
