@@ -22,7 +22,7 @@ class Event(models.Model):
     tag = models.CharField(
         max_length=10,
     )
-    photo = models.ImageField(
+    general_image = models.ImageField(
         upload_to='images/event',
     )
     banner = models.ImageField(
@@ -30,3 +30,17 @@ class Event(models.Model):
         blank=True,
         null=True,
     )
+
+    site_url = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+    )
+    content_image = models.ImageField(
+        upload_to='images/event',
+        blank=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return self.title
