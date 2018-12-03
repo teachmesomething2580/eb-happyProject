@@ -14,6 +14,13 @@ class GiftCardTypeListAPIView(generics.ListAPIView):
     queryset = GiftCardType.objects.all()
     serializer_class = GiftCardTypeSerializer
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        is_hot = self.request.query_params.get('hot', '')
+        if is_hot == 'hot':
+            queryset = queryset.filter(is_hotdeal=True)
+        return queryset
+
 
 class OrderGiftCardPurchaseView(APIView):
     permission_classes = (
