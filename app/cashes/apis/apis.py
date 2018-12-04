@@ -1,5 +1,6 @@
 import json
 
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, status, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -21,12 +22,8 @@ class CashPurchaseListView(generics.ListAPIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        user = self.request.user
-        h = self.request.query_params.get('h', 'hc')
-        return queryset.filter(user=user, hammer_or_cash=h)
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('hammer_or_cash', )
 
 
 class CashPurchaseGetRequest(APIView):

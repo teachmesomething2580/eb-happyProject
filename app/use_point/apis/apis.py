@@ -22,5 +22,5 @@ class UsePointListGenericAPIView(generics.ListAPIView):
 
 
 class CategoryUsePointListGenericAPIView(generics.ListAPIView):
-    queryset = UsePointCategory.objects.filter(usepoint__is_online=True, usepoint__where_to_use__is_import_point=True)
+    queryset = UsePointCategory.objects.all()
     serializer_class = CategoryUsePointSerializer

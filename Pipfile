@@ -14,6 +14,7 @@ phonenumbers = "*"
 djangorestframework = "*"
 requests = "*"
 django-cors-headers = "*"
+django-filter = "*"
 
 [dev-packages]
 awsebcli = "*"
