@@ -25,6 +25,11 @@ class CashPurchaseListView(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ('hammer_or_cash', )
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        user = self.request.user
+        return queryset.filter(user=user)
+
 
 class CashPurchaseGetRequest(APIView):
     permission_classes = (

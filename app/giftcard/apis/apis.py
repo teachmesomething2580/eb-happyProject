@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status, permissions, serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,13 +14,8 @@ from giftcard.models import GiftCardType, OrderGiftCard
 class GiftCardTypeListAPIView(generics.ListAPIView):
     queryset = GiftCardType.objects.all()
     serializer_class = GiftCardTypeSerializer
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        is_hot = self.request.query_params.get('hot', '')
-        if is_hot == 'hot':
-            queryset = queryset.filter(is_hotdeal=True)
-        return queryset
+    filter_backends = (DjangoFilterBackend,)
+    filter_fields = ('is_hotdeal', )
 
 
 class OrderGiftCardPurchaseView(APIView):
