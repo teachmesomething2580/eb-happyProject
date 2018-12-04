@@ -6,7 +6,5 @@ from use_point.models import UsePoint
 class UsePointSerializer(serializers.ModelSerializer):
     class Meta:
         model = UsePoint
-        exclude = (
-            'where_to_use',
-            'like_users',
-        )
+        fields = '__all__'
+        depth = 1

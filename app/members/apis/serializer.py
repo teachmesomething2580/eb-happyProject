@@ -75,7 +75,7 @@ class UserAuthTokenSerializer(serializers.Serializer):
         self.user = authenticate(username=attrs['username'], password=attrs['password'])
 
         if not self.user:
-            raise serializers.ValidationError('유저 정보가 잘못되었습니다.')
+            raise serializers.ValidationError({'detail': '유저 정보가 잘못되었습니다.'})
         return attrs
 
     def to_representation(self, instance):
