@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'event',
     'posts',
 
+    'django_filters',
     'corsheaders',
 
     'django.contrib.admin',

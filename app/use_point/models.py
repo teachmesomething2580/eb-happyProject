@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.db import models
 
+from use_point.managers import UsePointManager
+
 
 class UsePoint(models.Model):
     name = models.CharField(
@@ -28,6 +30,8 @@ class UsePoint(models.Model):
         blank=True,
         null=True,
     )
+
+    objects = UsePointManager()
 
     class Meta:
         unique_together = ('name', 'is_online')
