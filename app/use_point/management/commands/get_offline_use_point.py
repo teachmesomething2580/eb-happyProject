@@ -74,7 +74,7 @@ class Command(GetUsePoint):
 
             # 이미지 다운로드
             img_url = item.select_one('img')['src']
-            if img_url is 'http://image.happymoney.co.kr/extimage/useStore/offline_noimg_book.gif':
+            if img_url is not 'http://image.happymoney.co.kr/extimage/useStore/offline_noimg_book.gif':
                 img_name = ignorecase.search(img_url).group(1)
                 img_path = os.path.join(imgdir, img_name)
                 thread_list.append(gevent.spawn(self.download_images(img_url, img_path)))

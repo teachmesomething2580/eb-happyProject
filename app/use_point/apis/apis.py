@@ -10,13 +10,13 @@ from use_point.models import UsePoint, UsePointCategory
 
 
 class UsePointListGenericAPIView(generics.ListAPIView):
-    __basic_fields = ('name', 'is_online', )
+    __basic_fields = ('name', 'is_online', 'category__name', )
     queryset = UsePoint.objects.all()
     serializer_class = UsePointSerializer
     pagination_class = UsePointResultSetPagination
-    filter_backends = (DjangoFilterBackend, SearchFilter, UsePointOrdering)
+    filter_backends = (DjangoFilterBackend, SearchFilter, UsePointOrdering,)
     filter_fields = __basic_fields
-    search_fields = __basic_fields
+    search_fields = ('^name', 'is_online', 'category__name', )
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -33,5 +33,9 @@ class CategoryUsePointListGenericAPIView(generics.ListAPIView):
 
 
 class CategoryListGenericAPIView(generics.ListAPIView):
+    __basic_fields = ('name', )
     queryset = UsePointCategory.objects.all()
     serializer_class = CategorySerializer
+    filter_backends = (DjangoFilterBackend, SearchFilter, )
+    filter_fields = __basic_fields
+    search_fields = __basic_fields

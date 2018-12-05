@@ -1,4 +1,5 @@
 from rest_framework.filters import OrderingFilter
+from django_filters import FilterSet
 
 
 class UsePointOrdering(OrderingFilter):
@@ -8,3 +9,4 @@ class UsePointOrdering(OrderingFilter):
             if 'like_users_count' in field:
                 ordering.append(field)
         return ordering
+
