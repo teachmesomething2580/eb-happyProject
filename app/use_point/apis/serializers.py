@@ -3,6 +3,36 @@ from rest_framework import serializers
 from use_point.models import UsePoint, UsePointCategory
 
 
+class UsePointLikeSerializer(serializers.Serializer):
+    usepoint_pk = serializers.IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.user = None
+        self.usepoint = None
+
+    def validate(self, attrs):
+        if not UsePoint.objects.filter(pk=attrs['usepoint_pk']).exists():
+            raise serializers.ValidationError({'detail': '입점몰 정보가 잘못되었습니다.'})
+
+        self.usepoint = UsePoint.objects.get(pk=attrs['usepoint_pk'])
+
+        return attrs
+
+    def to_representation(self, instance):
+        user = self.context['request'].user
+        if self.usepoint.like_users.filter(pk=user.pk).exists():
+            self.usepoint.like_users.remove(user)
+            return {
+                'status': 'deleted'
+            }
+        else:
+            self.usepoint.like_users.add(user)
+            return {
+                'status': 'created'
+            }
+
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = UsePointCategory
