@@ -37,8 +37,8 @@ class CategoryUsePointListGenericAPIView(generics.ListAPIView):
 
 
 class CategoryListGenericAPIView(generics.ListAPIView):
-    __basic_fields = ('name', )
-    queryset = UsePointCategory.objects.all()
+    __basic_fields = ('name', 'usepoint__is_online', )
+    queryset = UsePointCategory.objects.all().distinct()
     serializer_class = CategorySerializer
     filter_backends = (DjangoFilterBackend, SearchFilter, )
     filter_fields = __basic_fields
