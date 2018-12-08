@@ -1,7 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, permissions, serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework import generics, serializers
 
+from event.apis.filters import EventFilter
 from event.apis.pagination import EventResultSetPagination
 from event.apis.serializer import EventSerializer
 from event.models import Event
@@ -12,7 +12,7 @@ class EventCreateListAPIView(generics.ListCreateAPIView):
     serializer_class = EventSerializer
     pagination_class = EventResultSetPagination
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('category', )
+    filter_class = EventFilter
 
     def perform_create(self, serializer):
         if self.request.user.is_staff:
