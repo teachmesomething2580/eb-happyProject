@@ -85,7 +85,7 @@ class Command(GetUsePoint):
             try:
                 site_url = item.select_one('span.btn > a')['href']
             except TypeError:
-                site_url = ''
+                site_url = '#'
 
             try:
                 self.createUsePoint(
