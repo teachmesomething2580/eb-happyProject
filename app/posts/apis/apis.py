@@ -1,7 +1,8 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, serializers
-from rest_framework.exceptions import ValidationError
 
-from posts.apis.pagination import PostsResultSetPagination
+from posts.apis.filters import FAQFilter
+from posts.apis.pagination import FAQPagination
 from posts.apis.serializer import NoticeSerializer, FAQSerializer, InquirySerializer, FAQCategorySerializer
 from posts.models import Notice, FAQ, Inquiry, FAQCategory, FAQSubCategory
 
@@ -9,7 +10,7 @@ from posts.models import Notice, FAQ, Inquiry, FAQCategory, FAQSubCategory
 class NoticeListAPIView(generics.ListAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
-    pagination_class = PostsResultSetPagination
+    pagination_class = FAQPagination
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -22,7 +23,9 @@ class NoticeListAPIView(generics.ListAPIView):
 class FAQListAPIView(generics.ListAPIView):
     queryset = FAQ.objects.all()
     serializer_class = FAQSerializer
-    pagination_class = PostsResultSetPagination
+    pagination_class = FAQPagination
+    filter_backends = (DjangoFilterBackend,)
+    filter_class = FAQFilter
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -38,7 +41,7 @@ class InquiryCreateListAPIView(generics.ListCreateAPIView):
     permission_classes = (
         permissions.IsAuthenticated,
     )
-    pagination_class = PostsResultSetPagination
+    pagination_class = FAQPagination
 
     def perform_create(self, serializer):
         try:
