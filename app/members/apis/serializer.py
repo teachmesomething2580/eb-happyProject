@@ -96,6 +96,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             'password',
             'phone',
             'email',
+            'birth',
             'name',
             'sns_agree',
             'email_agree',
