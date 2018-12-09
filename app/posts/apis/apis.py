@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, serializers
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 from posts.apis.filters import FAQFilter
 from posts.apis.pagination import FAQPagination
@@ -24,7 +25,7 @@ class FAQListAPIView(generics.ListAPIView):
     queryset = FAQ.objects.all()
     serializer_class = FAQSerializer
     pagination_class = FAQPagination
-    filter_backends = (DjangoFilterBackend,)
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter,)
     filter_class = FAQFilter
 
     def get_queryset(self):
