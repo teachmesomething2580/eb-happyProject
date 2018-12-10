@@ -7,4 +7,5 @@ urlpatterns = [
     path('faq/', apis.FAQListAPIView.as_view()),
     path('inquiry/', apis.InquiryCreateListAPIView.as_view()),
     path('faq-category/', apis.FAQCategoryListAPIView.as_view()),
+    path('notice-category/', apis.NoticeCategoryListAPIView.as_view()),
 ]

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from posts.models import Notice, FAQ, Inquiry, FAQCategory, FAQSubCategory
+from posts.models import Notice, FAQ, Inquiry, FAQCategory, FAQSubCategory, NoticeCategory
 
 
 class NoticeSerializer(serializers.ModelSerializer):
@@ -8,6 +8,12 @@ class NoticeSerializer(serializers.ModelSerializer):
         model = Notice
         fields = '__all__'
         depth = 1
+
+
+class NoticeCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NoticeCategory
+        fields = '__all__'
 
 
 class FAQSerializer(serializers.ModelSerializer):

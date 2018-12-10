@@ -2,23 +2,19 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, serializers
 from rest_framework.filters import SearchFilter, OrderingFilter
 
-from posts.apis.filters import FAQFilter
+from posts.apis.filters import FAQFilter, NoticeFilter
 from posts.apis.pagination import FAQPagination
-from posts.apis.serializer import NoticeSerializer, FAQSerializer, InquirySerializer, FAQCategorySerializer
-from posts.models import Notice, FAQ, Inquiry, FAQCategory, FAQSubCategory
+from posts.apis.serializer import NoticeSerializer, FAQSerializer, InquirySerializer, FAQCategorySerializer, \
+    NoticeCategorySerializer
+from posts.models import Notice, FAQ, Inquiry, FAQCategory, FAQSubCategory, NoticeCategory
 
 
 class NoticeListAPIView(generics.ListAPIView):
     queryset = Notice.objects.all()
     serializer_class = NoticeSerializer
     pagination_class = FAQPagination
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        category = self.request.query_params.get('category', 'all')
-        if category == 'all':
-            return queryset
-        return queryset.filter(category__pk=category)
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter,)
+    filter_class = NoticeFilter
 
 
 class FAQListAPIView(generics.ListAPIView):
@@ -27,13 +23,6 @@ class FAQListAPIView(generics.ListAPIView):
     pagination_class = FAQPagination
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter,)
     filter_class = FAQFilter
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        category = self.request.query_params.get('category', 'all')
-        if category == 'all':
-            return queryset
-        return queryset.filter(category__pk=category)
 
 
 class InquiryCreateListAPIView(generics.ListCreateAPIView):
@@ -63,3 +52,8 @@ class InquiryCreateListAPIView(generics.ListCreateAPIView):
 class FAQCategoryListAPIView(generics.ListAPIView):
     queryset = FAQCategory.objects.all()
     serializer_class = FAQCategorySerializer
+
+
+class NoticeCategoryListAPIView(generics.ListAPIView):
+    queryset = NoticeCategory.objects.all()
+    serializer_class = NoticeCategorySerializer
