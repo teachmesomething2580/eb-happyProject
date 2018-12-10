@@ -1,11 +1,11 @@
 from django.contrib.auth import get_user_model
-from rest_framework import generics, status, permissions
+from rest_framework import generics, status, permissions, serializers
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from members.apis.serializer import UserProfileSerializer, UserAuthTokenSerializer, UserCreateSerializer, \
-    DeliverySerializer, RatingSerializer
+    DeliverySerializer, RatingSerializer, CheckPasswordSerializer
 from members.apis.permissions import IsUserAdmin
 from members.models import Address, Rating
 
@@ -17,6 +17,29 @@ class UserAuthTokenView(APIView):
         serializer = UserAuthTokenSerializer(data=request.data)
         if serializer.is_valid():
             return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CheckPasswordGenericAPIView(APIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+
+    def post(self, request):
+        serializer = CheckPasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            userProfile = UserProfileSerializer(request.user)
+            return Response(userProfile.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request):
+        serializer = CheckPasswordSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            if request.data.get('new_password'):
+                request.user.set_password(request.data['new_password'])
+                request.user.save()
+                return Response(status=status.HTTP_200_OK)
+            raise serializers.ValidationError({'detail': '새로운 패스워드가 전송되지 않았습니다.'})
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -38,7 +61,7 @@ class UserListGenericAPIView(generics.ListAPIView):
         return serializer
 
 
-class UserRetrieveGenericAPIView(generics.RetrieveAPIView):
+class UserRetrieveGenericAPIView(generics.RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileSerializer
 

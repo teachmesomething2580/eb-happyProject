@@ -49,10 +49,21 @@ class UserProfileSerializer(DynamicUserSerializer):
     class Meta:
         model = User
         fields = (
-            'pk',
+            'name',
             'username',
             'phone',
             'email',
+            'rating',
+            'sns_agree',
+            'email_agree',
+            'hammer',
+            'happy_cash',
+        )
+
+        read_only_fields = (
+            'name',
+            'username',
+            'phone',
             'rating',
             'hammer',
             'happy_cash',
@@ -82,6 +93,32 @@ class UserAuthTokenSerializer(serializers.Serializer):
         token = Token.objects.get_or_create(user=self.user)[0]
         return {
             'token': token.key,
+        }
+
+
+class CheckPasswordSerializer(serializers.Serializer):
+    """
+    패스워드 정보 확인
+    """
+    password = serializers.CharField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.is_authenticate = False
+
+    def validate(self, attrs):
+        username = self.context['request'].user.username
+
+        user = authenticate(username=username, password=attrs['password'])
+
+        if not user:
+            raise serializers.ValidationError({'detail': '비밀번호가 잘못되었습니다.'})
+        self.is_authenticate = True
+        return attrs
+
+    def to_representation(self, instance):
+        return {
+            'detail': '인증이 완료되었습니다.',
         }
 
 
