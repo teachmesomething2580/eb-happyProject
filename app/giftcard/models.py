@@ -93,12 +93,16 @@ class OrderGiftCardAmount(models.Model):
 
 
 class OrderGiftCard(models.Model):
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )
     content = models.CharField(
         max_length=100,
+    )
+    before_purchase = models.BooleanField(
+        default=False,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=15)

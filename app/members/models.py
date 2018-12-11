@@ -35,7 +35,11 @@ class User(AbstractUser):
     phone = PhoneNumberField(unique=True)
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=10)
-    birth = models.DateField()
+    birth = models.DateField(
+        # for Debug
+        blank=True,
+        null=True,
+    )
     sns_agree = models.BooleanField(default=False)
     email_agree = models.BooleanField(default=False)
     online_available_use_category_limit = models.ManyToManyField(
