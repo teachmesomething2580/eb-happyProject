@@ -6,7 +6,6 @@ from cashes.manager import CashManager
 
 
 class Cash(models.Model):
-    objects = CashManager()
 
     USE_OR_SAVE_CHOICES = (
         ('u', 'use'),
@@ -34,6 +33,9 @@ class Cash(models.Model):
         settings.AUTH_USER_MODEL,
         related_name="%(class)s_user",
         on_delete=models.CASCADE,
+    )
+    purchased = models.BooleanField(
+        default=False,
     )
 
     def __str__(self):
