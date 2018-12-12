@@ -1,6 +1,14 @@
 from rest_framework import serializers
 
-from ..models import GiftCardType, OrderGiftCard, EmailOrderGiftCard, SMSOrderGiftCard, AddressOrderGiftCard
+from ..models import GiftCardType, OrderGiftCard, EmailOrderGiftCard, SMSOrderGiftCard, AddressOrderGiftCard, \
+    HappyGiftCard
+
+
+class HappyGiftCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HappyGiftCard
+        fields = '__all__'
+
 
 
 class GiftCardTypeSerializer(serializers.ModelSerializer):

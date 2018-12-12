@@ -14,7 +14,7 @@ User = get_user_model()
 
 
 def increment_giftcard_cnt():
-    last = GiftCardType.objects.last()
+    last = HappyGiftCard.objects.last()
     if not last:
         return 'gcnt_0000'
     now = last.gift_card_unique_id
@@ -80,9 +80,24 @@ class PINGiftCard(models.Model):
         return PIN
 
 
+class HappyGiftCard(models.Model):
+    DELIVERY_TYPE_CHOICES = (
+        ('sms', 'SMS'),
+        ('email', 'EMAIL'),
+        ('address', 'address'),
+    )
+    gift_card_unique_id = models.CharField(max_length=8, default=increment_giftcard_cnt, editable=False)
+    price = models.PositiveIntegerField()
+    delivery_type = models.CharField(
+        choices=DELIVERY_TYPE_CHOICES,
+        max_length=7,
+    )
+
+
+
 class OrderGiftCardAmount(models.Model):
     gift_card = models.ForeignKey(
-        GiftCardType,
+        HappyGiftCard,
         on_delete=models.CASCADE,
     )
     order_gift_card = models.ForeignKey(
@@ -91,44 +106,34 @@ class OrderGiftCardAmount(models.Model):
     )
     amount = models.IntegerField()
 
+    def __str__(self):
+        return '상품권 가격: ' + str(self.gift_card.price) + ', 상품권 갯수 : ' + str(self.amount)
+
 
 class OrderGiftCard(models.Model):
-
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
     )
-    content = models.CharField(
+    merchant_uid = models.CharField(
         max_length=100,
-    )
-    before_purchase = models.BooleanField(
-        default=False,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=15)
+    is_purchase = models.BooleanField(default=False)
+    full_amount = models.PositiveIntegerField()
 
     @staticmethod
     @transaction.atomic
-    def create_order(serializer_class, extra_field, imp_uid, merchant_uid, purchase_list, user, paid_amount):
-        serializer_lists = []
-
-        if imp_uid is None:
-            if user.happy_cash <= paid_amount:
-                raise serializers.ValidationError({'detail': '잔액이 모자랍니다.'})
-            Cash.give_point(
-                content=merchant_uid,
-                amount=paid_amount,
-                hammer_or_cash='hc',
-                use_or_save='u',
-                user=user,
-            )
+    def before_create_order(serializer_class, extra_field, merchant_uid, purchase_list, user, full_amount):
 
         # 여러 Email을 가지고 주문하였기 때문에
         for purchase in purchase_list:
             data = {
-                'content': merchant_uid,
+                'merchant_uid': merchant_uid,
                 'name': purchase['name'],
-                extra_field: purchase[extra_field],
+                extra_field: purchase['infoTo'],
+                'full_amount': full_amount,
             }
             serializer = serializer_class(data=data)
 
@@ -137,32 +142,40 @@ class OrderGiftCard(models.Model):
                 for purchase_info in purchase['giftcard_info']:
                     # OrderGiftCardAmount 생성
                     amount = purchase_info['amount']
-                    # GiftCard 가져옴
-                    g = GiftCardType.objects.get(gift_card_unique_id=purchase_info['type'])
+                    g = HappyGiftCard.objects.get(gift_card_unique_id=purchase_info['type'])
                     if g is None:
                         raise serializers.ValidationError({'detail': '해당 상품권의 종류가 없습니다.'})
 
-                    o = OrderGiftCardAmount.objects.create(
+                    OrderGiftCardAmount.objects.create(
                         gift_card=g,
                         order_gift_card=order_gift_card,
                         amount=amount
                     )
 
-                    # PINGiftCard 생성
-                    for i in amount:
-                        PIN = PINGiftCard.create_pin()
-                        PINGiftCard.objects.create(
-                            PIN=PIN,
-                            is_used=False,
-                            created_in_order=o
-                        )
-                serializer_lists.append(order_gift_card)
             else:
-                # serailizer 오류시
-                if imp_uid:
-                    IamPortAPI().purchase_cancel(imp_uid)
-                    raise serializers.ValidationError({'detail': '결제 정보 생성시 오류가 발생했습니다.'})
-        return serializer_lists
+                raise serializers.ValidationError({'detail': '결제 정보 생성시 오류가 발생했습니다.'})
+        return True
+
+    @staticmethod
+    @transaction.atomic
+    def create_order(order_gift_card_list, imp_uid):
+        for order_gift_card in order_gift_card_list:
+            order_list = order_gift_card.ordergiftcardamount_set.all()
+
+            # 핀 생성
+            for one_order in order_list:
+                for _ in range(0, one_order.amount):
+                    PIN = PINGiftCard.create_pin()
+                    PINGiftCard.objects.create(
+                        PIN=PIN,
+                        is_used=False,
+                        created_in_order=one_order
+                    )
+
+            # 결제 완료
+            order_gift_card.is_purchase = True
+            order_gift_card.save()
+        return True
 
 
 class EmailOrderGiftCard(OrderGiftCard):
