@@ -153,7 +153,7 @@ class OrderGiftCard(models.Model):
                     )
 
             else:
-                raise serializers.ValidationError({'detail': '결제 정보 생성시 오류가 발생했습니다.'})
+                raise serializers.ValidationError(serializer.errors)
         return True
 
     @staticmethod
