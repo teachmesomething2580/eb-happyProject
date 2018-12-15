@@ -6,8 +6,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from cashes.apis.backends import IamPortAPI
-from cashes.apis.pagination import CashResultSetPagination
 from cashes.apis.permissions import IsAuthenticatedWithPurchase
+from giftcard.apis.filters import OrderGiftCardFilter
+from giftcard.apis.pagination import OrderGiftCardPagination
 from giftcard.apis.serializer import GiftCardTypeSerializer, EmailOrderGiftCardSerializer, \
     SMSOrderGiftCardSerializer, AddressOrderGiftCardSerializer, OrderGiftCardSerializer, HappyGiftCardSerializer
 from giftcard.models import GiftCardType, OrderGiftCard, HappyGiftCard
@@ -61,7 +62,7 @@ class BeforeOrderGiftCardPurchaseView(APIView):
             extra_field = 'email'
         elif delivery_type == 'sms':
             serializer_class = SMSOrderGiftCardSerializer
-            extra_field = 'phone'
+            extra_field = 'sms'
         elif delivery_type == 'address':
             serializer_class = AddressOrderGiftCardSerializer
             extra_field = ''
@@ -117,14 +118,17 @@ class OrderGiftCardPurchaseView(APIView):
 
 
 class OrderGiftCardListView(generics.ListAPIView):
-    queryset = OrderGiftCard.objects.all()
+    queryset = OrderGiftCard.objects.all().distinct('merchant_uid')
     serializer_class = OrderGiftCardSerializer
-    pagination_class = CashResultSetPagination
+    pagination_class = OrderGiftCardPagination
     permission_classes = (
         permissions.IsAuthenticated,
     )
+    filter_backends = (DjangoFilterBackend, )
+    filter_class = OrderGiftCardFilter
 
     def get_queryset(self):
-        queryset = super().get_queryset()
         user = self.request.user
+        queryset = super().get_queryset()
         return queryset.filter(user=user)
+

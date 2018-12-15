@@ -23,11 +23,11 @@ class Cash(models.Model):
     amount = models.PositiveIntegerField()
     hammer_or_cash = models.CharField(
         choices=HAMMER_OR_HAPPY,
-        max_length=2,
+        max_length=3,
     )
     use_or_save = models.CharField(
         choices=USE_OR_SAVE_CHOICES,
-        max_length=1,
+        max_length=2,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(

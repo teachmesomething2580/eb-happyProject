@@ -13,8 +13,18 @@ from members.models import Address
 User = get_user_model()
 
 
-def increment_giftcard_cnt():
+def increment_happycard_cnt():
     last = HappyGiftCard.objects.last()
+    if not last:
+        return 'gcnt_0000'
+    now = last.gift_card_unique_id
+    gcnt, numbering = now.split('_')
+    add_number = int(numbering) + 1
+    return gcnt + '_' + f'{add_number:0>4}'
+
+
+def increment_giftcard_cnt():
+    last = GiftCardType.objects.last()
     if not last:
         return 'gcnt_0000'
     now = last.gift_card_unique_id
@@ -44,13 +54,13 @@ class GiftCardType(models.Model):
         ('m', 'mobile'),
     )
 
-    gift_card_unique_id = models.CharField(max_length=8, default=increment_giftcard_cnt, editable=False)
+    gift_card_unique_id = models.CharField(max_length=9, default=increment_giftcard_cnt, editable=False)
 
     amount = models.IntegerField()
     is_hotdeal = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     category = models.CharField(
-        max_length=1,
+        max_length=2,
         choices=CATEGORY_CHOICE,
     )
     mall_category = models.ForeignKey(
@@ -86,11 +96,11 @@ class HappyGiftCard(models.Model):
         ('email', 'EMAIL'),
         ('address', 'address'),
     )
-    gift_card_unique_id = models.CharField(max_length=8, default=increment_giftcard_cnt, editable=False)
+    gift_card_unique_id = models.CharField(max_length=10, default=increment_happycard_cnt, editable=False)
     price = models.PositiveIntegerField()
     delivery_type = models.CharField(
         choices=DELIVERY_TYPE_CHOICES,
-        max_length=7,
+        max_length=10,
     )
 
 
@@ -111,6 +121,12 @@ class OrderGiftCardAmount(models.Model):
 
 
 class OrderGiftCard(models.Model):
+    DELIVERY_TYPE_CHOICES = (
+        ('sms', 'SMS'),
+        ('email', 'EMAIL'),
+        ('address', 'address'),
+    )
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -122,6 +138,10 @@ class OrderGiftCard(models.Model):
     name = models.CharField(max_length=15)
     is_purchase = models.BooleanField(default=False)
     full_amount = models.PositiveIntegerField()
+    delivery_type = models.CharField(
+        choices=DELIVERY_TYPE_CHOICES,
+        max_length=10,
+    )
 
     @staticmethod
     @transaction.atomic
@@ -134,6 +154,7 @@ class OrderGiftCard(models.Model):
                 'name': purchase['name'],
                 extra_field: purchase['infoTo'],
                 'full_amount': full_amount,
+                'delivery_type': extra_field,
             }
             serializer = serializer_class(data=data)
 
@@ -183,7 +204,7 @@ class EmailOrderGiftCard(OrderGiftCard):
 
 
 class SMSOrderGiftCard(OrderGiftCard):
-    phone = PhoneNumberField()
+    sms = PhoneNumberField()
 
 
 class AddressOrderGiftCard(OrderGiftCard):

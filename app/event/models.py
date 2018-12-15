@@ -16,11 +16,11 @@ class Event(models.Model):
     start = models.DateField()
     end = models.DateField()
     category = models.CharField(
-        max_length=10,
+        max_length=12,
         choices=CATEGORY_CHOICES,
     )
     tag = models.CharField(
-        max_length=10,
+        max_length=12,
     )
     general_image = models.ImageField(
         upload_to='images/event',
