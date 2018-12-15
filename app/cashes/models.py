@@ -17,7 +17,7 @@ class Cash(models.Model):
         ('hm', 'Hammer'),
     )
 
-    content = models.CharField(
+    merchant_uid = models.CharField(
         max_length=100,
     )
     amount = models.PositiveIntegerField()

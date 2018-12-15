@@ -1,3 +1,5 @@
+import datetime
+
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, status, serializers
 from rest_framework.response import Response
@@ -39,7 +41,6 @@ class CashPurchaseGetRequest(APIView):
         # 필수로 가져와야하는 항목을 가져온다.
         imp_uid = request.data['imp_uid']
         try:
-            merchant_uid = request.data['merchant_uid']
             paid_amount = request.data['paid_amount']
         except KeyError:
             IamPortAPI().purchase_cancel(imp_uid)
@@ -50,8 +51,12 @@ class CashPurchaseGetRequest(APIView):
         result_status = result['status']
 
         if result_status == 'success':
+            timestamp = int(datetime.datetime.now().timestamp() * 1000)
+            merchant_uid = 'happyCash_' + str(timestamp)
+            paid_amount = paid_amount + paid_amount * 0.03
+
             data = {
-                'content': merchant_uid,
+                'merchant_uid': merchant_uid,
                 'amount': paid_amount,
                 'hammer_or_cash': 'hc',
                 'use_or_save': 's',
