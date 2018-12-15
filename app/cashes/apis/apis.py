@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from cashes.apis.backends import IamPortAPI
+from cashes.apis.filters import CashFilter
 from cashes.apis.pagination import CashListPagination
 from cashes.apis.permissions import IsAuthenticatedWithPurchase
 from cashes.apis.serializer import CashPurchaseSerializer
@@ -21,7 +22,7 @@ class CashPurchaseListView(generics.ListAPIView):
         permissions.IsAuthenticated,
     )
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('hammer_or_cash', )
+    filter_class = CashFilter
 
     def get_queryset(self):
         queryset = super().get_queryset()

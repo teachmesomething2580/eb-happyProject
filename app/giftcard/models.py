@@ -81,6 +81,7 @@ class PINGiftCard(models.Model):
         'OrderGiftCardAmount',
         on_delete=models.CASCADE,
     )
+    created_at = models.DateTimeField(auto_now_add=True)
 
     @staticmethod
     def create_pin():
@@ -102,7 +103,6 @@ class HappyGiftCard(models.Model):
         choices=DELIVERY_TYPE_CHOICES,
         max_length=10,
     )
-
 
 
 class OrderGiftCardAmount(models.Model):

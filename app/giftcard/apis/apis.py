@@ -10,8 +10,9 @@ from cashes.apis.permissions import IsAuthenticatedWithPurchase
 from giftcard.apis.filters import OrderGiftCardFilter
 from giftcard.apis.pagination import OrderGiftCardPagination
 from giftcard.apis.serializer import GiftCardTypeSerializer, EmailOrderGiftCardSerializer, \
-    SMSOrderGiftCardSerializer, AddressOrderGiftCardSerializer, OrderGiftCardSerializer, HappyGiftCardSerializer
-from giftcard.models import GiftCardType, OrderGiftCard, HappyGiftCard
+    SMSOrderGiftCardSerializer, AddressOrderGiftCardSerializer, OrderGiftCardSerializer, HappyGiftCardSerializer, \
+    OrderGiftCardWithPINSerializer
+from giftcard.models import GiftCardType, OrderGiftCard, HappyGiftCard, PINGiftCard
 
 
 class GiftCardTypeListAPIView(generics.ListAPIView):
@@ -132,3 +133,21 @@ class OrderGiftCardListView(generics.ListAPIView):
         queryset = super().get_queryset()
         return queryset.filter(user=user)
 
+
+class OrderGiftCardWithPINListView(generics.ListAPIView):
+    queryset = PINGiftCard.objects.all()
+    serializer_class = OrderGiftCardWithPINSerializer
+    pagination_class = OrderGiftCardPagination
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = super().get_queryset()
+        return queryset.filter(created_in_order__order_gift_card__user=user,
+                               created_in_order__order_gift_card__is_purchase=True,
+                               created_in_order__order_gift_card__delivery_type=self.request.query_params.get('delivery_type'))
+
+    def get_serializer_context(self):
+        return {'delivery_type': self.request.query_params.get('delivery_type')}
