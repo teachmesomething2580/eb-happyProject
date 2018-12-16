@@ -88,6 +88,7 @@ class BeforeOrderGiftCardPurchaseView(APIView):
             raise serializers.ValidationError({'detail': '전달되지 않은 정보로 인해 결제가 취소됩니다.'})
 
         full_amount = 0
+        is_happyCash = False
 
         for p in purchase_list:
             for price in p['giftcard_info']:
@@ -117,8 +118,11 @@ class BeforeOrderGiftCardPurchaseView(APIView):
         timestamp = int(datetime.datetime.now().timestamp() * 1000)
         merchant_uid = 'giftCard_' + str(timestamp)
 
+        if request.data.get('is_happyCash'):
+            is_happyCash = True
+
         create_status = OrderGiftCard.before_create_order(serializer_class, extra_field, merchant_uid, purchase_list,
-                                           request.user, full_amount)
+                                           request.user, full_amount, is_happyCash)
         if create_status is not True:
             raise serializers.ValidationError({'detail': '결제 정보 생성시 오류가 발생했습니다.'})
         return Response({'merchant_uid': merchant_uid, 'full_amount': full_amount}, status=status.HTTP_201_CREATED)

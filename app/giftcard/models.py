@@ -177,9 +177,20 @@ class OrderGiftCard(models.Model):
 
     @staticmethod
     @transaction.atomic
-    def before_create_order(serializer_class, extra_field, merchant_uid, purchase_list, user, full_amount):
+    def before_create_order(serializer_class, extra_field, merchant_uid, purchase_list, user, full_amount, is_happyCash):
+        if is_happyCash:
+            data = {
+                'merchant_uid': merchant_uid,
+                'amount': full_amount,
+                'hammer_or_cash': 'hc',
+                'use_or_save': 'u',
+            }
 
-        # 여러 Email을 가지고 주문하였기 때문에
+            Cash.give_point(
+                user=user,
+                **data
+            )
+
         for purchase in purchase_list:
             data = {
                 'merchant_uid': merchant_uid,
@@ -207,6 +218,10 @@ class OrderGiftCard(models.Model):
 
             else:
                 raise serializers.ValidationError(serializer.errors)
+
+        if is_happyCash:
+            order_gift_card_list = OrderGiftCard.objects.filter(merchant_uid=merchant_uid, user=user)
+            OrderGiftCard.create_order(order_gift_card_list, None)
         return True
 
     @staticmethod
