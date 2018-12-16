@@ -10,4 +10,5 @@ urlpatterns = [
     path('purchase-list/', apis.OrderGiftCardListView.as_view()),
     path('happy-giftcard/', apis.HappyGiftCardListAPIView.as_view()),
     path('pin-list/', apis.OrderGiftCardWithPINListView.as_view()),
+    path('purchase-giftcard/', apis.PINGiftCardPurchaseView.as_view()),
 ]

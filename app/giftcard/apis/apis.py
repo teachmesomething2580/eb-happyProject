@@ -11,7 +11,7 @@ from giftcard.apis.filters import OrderGiftCardFilter
 from giftcard.apis.pagination import OrderGiftCardPagination
 from giftcard.apis.serializer import GiftCardTypeSerializer, EmailOrderGiftCardSerializer, \
     SMSOrderGiftCardSerializer, AddressOrderGiftCardSerializer, OrderGiftCardSerializer, HappyGiftCardSerializer, \
-    OrderGiftCardWithPINSerializer
+    OrderGiftCardWithPINSerializer, PINGiftCardSerializer
 from giftcard.models import GiftCardType, OrderGiftCard, HappyGiftCard, PINGiftCard
 
 
@@ -27,6 +27,50 @@ class HappyGiftCardListAPIView(generics.ListAPIView):
     serializer_class = HappyGiftCardSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ('delivery_type', )
+
+
+class PINGiftCardPurchaseView(APIView):
+    permission_classes = (
+        permissions.IsAuthenticated,
+    )
+
+    def post(self, request):
+        try:
+            PINGiftCardList = request.data['PINGiftCardList']
+        except KeyError:
+            raise serializers.ValidationError({'detail': '전달되지 않은 정봅로 인해 결제가 취소됩니다.'})
+
+        exst_PINGiftCardList = []
+
+        for PIN in PINGiftCardList:
+            try:
+                PIN_number = PIN.get('PIN')
+                created_at = datetime.datetime.strptime(PIN.get('created_at'), '%Y-%m-%d')
+            except KeyError:
+                raise serializers.ValidationError({'detail': '전달되지 않은 정봅로 인해 결제가 취소됩니다.'})
+
+            try:
+                p = PINGiftCard.objects.get(PIN=PIN_number, is_used=False, created_at=created_at)
+                if p:
+                    exst_PINGiftCardList.append(p)
+            except PINGiftCard.DoesNotExist:
+                continue
+
+        if exst_PINGiftCardList.__len__() == 0:
+            raise serializers.ValidationError({'detail': '유효한 상품이 없습니다.'})
+
+        status, merchant_uid, full_amount = PINGiftCard.PINCardToHappyCash(exst_PINGiftCardList, request.user)
+
+        if status is True:
+            serializer = PINGiftCardSerializer(exst_PINGiftCardList, many=True)
+            return_datas = {
+                'datas': serializer.data,
+                'merchant_uid': merchant_uid,
+                'full_amount': full_amount,
+            }
+            return Response(return_datas)
+        else:
+            raise serializers.ValidationError({'detail': '결제 정보 생성시 오류가 발생했습니다.'})
 
 
 class BeforeOrderGiftCardPurchaseView(APIView):

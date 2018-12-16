@@ -4,6 +4,23 @@ from ..models import GiftCardType, OrderGiftCard, EmailOrderGiftCard, SMSOrderGi
     HappyGiftCard, PINGiftCard, OrderGiftCardAmount
 
 
+class PINGiftCardSerializer(serializers.ModelSerializer):
+    price = serializers.SerializerMethodField()
+
+    class Meta:
+        model = PINGiftCard
+        fields = (
+            'PIN',
+            'is_used',
+            'created_at',
+            'price'
+        )
+
+    def get_price(self, obj):
+        order_gift_amount = OrderGiftCardAmount.objects.get(pingiftcard=obj)
+        return order_gift_amount.gift_card.price
+
+
 class HappyGiftCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = HappyGiftCard

@@ -49,7 +49,7 @@ class Cash(models.Model):
             raise serializers.ValidationError({'detail': '잔액이 부족합니다.'})
 
         hammer = Cash(
-            content='해머 전환',
+            merchant_uid='해머 전환',
             amount=amount,
             hammer_or_cash='hm',
             use_or_save='u',
@@ -57,7 +57,7 @@ class Cash(models.Model):
         )
 
         cash = Cash(
-            content='해머 전환',
+            merchant_uid='해머 전환',
             amount=amount,
             hammer_or_cash='hc',
             use_or_save='s',
@@ -90,6 +90,8 @@ class Cash(models.Model):
                 raise serializers.ValidationError({'detail': '잔액이 부족합니다.'})
 
             if hammer_or_cash == 'hm':
+                if user.hammer - amount < 0:
+                    raise serializers.ValidationError({'detail': '잔액이 부족합니다.'})
                 user.hammer -= amount
             else:
                 user.happy_cash -= amount

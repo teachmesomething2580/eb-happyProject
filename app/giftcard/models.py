@@ -1,3 +1,4 @@
+import datetime
 import random
 import string
 
@@ -81,7 +82,38 @@ class PINGiftCard(models.Model):
         'OrderGiftCardAmount',
         on_delete=models.CASCADE,
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.PIN
+
+    @staticmethod
+    @transaction.atomic
+    def PINCardToHappyCash(exst_PINGiftCardList, user):
+        timestamp = int(datetime.datetime.now().timestamp() * 1000)
+        merchant_uid = 'happyCash_' + str(timestamp)
+        full_amount = 0
+
+        for PIN in exst_PINGiftCardList:
+            price = PIN.created_in_order.gift_card.price
+            full_amount += price
+            PIN.is_used = True
+            PIN.save()
+
+        data = {
+            'merchant_uid': merchant_uid,
+            'amount': full_amount,
+            'hammer_or_cash': 'hc',
+            'use_or_save': 's',
+        }
+
+        Cash.give_point(
+            user=user,
+            **data
+        )
+
+        return True, merchant_uid, full_amount
+
 
     @staticmethod
     def create_pin():
