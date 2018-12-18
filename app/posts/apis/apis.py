@@ -10,7 +10,7 @@ from posts.models import Notice, FAQ, Inquiry, FAQCategory, FAQSubCategory, Noti
 
 
 class NoticeListAPIView(generics.ListAPIView):
-    queryset = Notice.objects.all()
+    queryset = Notice.objects.select_related('category')
     serializer_class = NoticeSerializer
     pagination_class = FAQPagination
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter,)
@@ -18,7 +18,7 @@ class NoticeListAPIView(generics.ListAPIView):
 
 
 class FAQListAPIView(generics.ListAPIView):
-    queryset = FAQ.objects.all()
+    queryset = FAQ.objects.all().select_related('category')
     serializer_class = FAQSerializer
     pagination_class = FAQPagination
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter,)
@@ -50,7 +50,7 @@ class InquiryCreateListAPIView(generics.ListCreateAPIView):
 
 
 class FAQCategoryListAPIView(generics.ListAPIView):
-    queryset = FAQCategory.objects.all()
+    queryset = FAQCategory.objects.prefetch_related('sub_category')
     serializer_class = FAQCategorySerializer
 
 
