@@ -44,7 +44,7 @@ class CheckPasswordGenericAPIView(APIView):
 
 
 class UserListGenericAPIView(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.all().select_related('rating')
     serializer_class = UserProfileSerializer
     permission_classes = (
         permissions.IsAuthenticated,
