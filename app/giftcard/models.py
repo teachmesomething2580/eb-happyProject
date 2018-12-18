@@ -175,6 +175,27 @@ class OrderGiftCard(models.Model):
         max_length=10,
     )
 
+    _email = models.EmailField(
+        blank=True,
+        null=True,
+    )
+    _sms = PhoneNumberField(
+        blank=True,
+        null=True,
+    )
+    _address = models.ForeignKey(
+        Address,
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True,
+    )
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self._email is None and self._sms is None and self._address is None:
+            raise serializers.ValidationError({'detail': '배달정보가 주어지지않았습니다.'})
+        super().save(force_insert, force_update, using, update_fields)
+
     @staticmethod
     @transaction.atomic
     def before_create_order(serializer_class, extra_field, merchant_uid, purchase_list, user, full_amount, is_happyCash):
@@ -195,7 +216,7 @@ class OrderGiftCard(models.Model):
             data = {
                 'merchant_uid': merchant_uid,
                 'name': purchase['name'],
-                extra_field: purchase['infoTo'],
+                '_'+extra_field: purchase['infoTo'],
                 'full_amount': full_amount,
                 'delivery_type': extra_field,
             }
@@ -206,6 +227,8 @@ class OrderGiftCard(models.Model):
                 for purchase_info in purchase['giftcard_info']:
                     # OrderGiftCardAmount 생성
                     amount = purchase_info['amount']
+                    if amount == '':
+                        amount = 0
                     g = HappyGiftCard.objects.get(gift_card_unique_id=purchase_info['type'])
                     if g is None:
                         raise serializers.ValidationError({'detail': '해당 상품권의 종류가 없습니다.'})
@@ -247,15 +270,39 @@ class OrderGiftCard(models.Model):
 
 
 class EmailOrderGiftCard(OrderGiftCard):
-    email = models.EmailField()
+    class Meta:
+        proxy = True
+
+    @property
+    def email(self):
+        return self._email
+
+    @email.setter
+    def email(self, value):
+        self._email = value
 
 
 class SMSOrderGiftCard(OrderGiftCard):
-    sms = PhoneNumberField()
+    class Meta:
+        proxy = True
+
+    @property
+    def sms(self):
+        return self._sms
+
+    @sms.setter
+    def sms(self, value):
+        self._sms = value
 
 
 class AddressOrderGiftCard(OrderGiftCard):
-    address = models.ForeignKey(
-        Address,
-        on_delete=models.CASCADE,
-    )
+    class Meta:
+        proxy = True
+
+    @property
+    def address(self):
+        return self._address
+
+    @address.setter
+    def address(self, value):
+        self._address = value

@@ -9,8 +9,7 @@ from cashes.apis.backends import IamPortAPI
 from cashes.apis.permissions import IsAuthenticatedWithPurchase
 from giftcard.apis.filters import OrderGiftCardFilter
 from giftcard.apis.pagination import OrderGiftCardPagination
-from giftcard.apis.serializer import GiftCardTypeSerializer, EmailOrderGiftCardSerializer, \
-    SMSOrderGiftCardSerializer, AddressOrderGiftCardSerializer, OrderGiftCardSerializer, HappyGiftCardSerializer, \
+from giftcard.apis.serializer import GiftCardTypeSerializer, OrderGiftCardSerializer, HappyGiftCardSerializer, \
     OrderGiftCardWithPINSerializer, PINGiftCardSerializer
 from giftcard.models import GiftCardType, OrderGiftCard, HappyGiftCard, PINGiftCard
 
@@ -93,6 +92,8 @@ class BeforeOrderGiftCardPurchaseView(APIView):
         for p in purchase_list:
             for price in p['giftcard_info']:
                 amount = price['amount']
+                if amount == '':
+                    amount = 0
                 g = HappyGiftCard.objects.get(gift_card_unique_id=price['type'])
                 if g is None:
                     raise serializers.ValidationError({'detail': '해당 GiftCard 종류가 존재하지 않습니다.'})
@@ -104,19 +105,17 @@ class BeforeOrderGiftCardPurchaseView(APIView):
             raise serializers.ValidationError({'detail': '생성할 상품권이 존재하지 않습니다.'})
 
         if delivery_type == 'email':
-            serializer_class = EmailOrderGiftCardSerializer
             extra_field = 'email'
         elif delivery_type == 'sms':
-            serializer_class = SMSOrderGiftCardSerializer
             extra_field = 'sms'
         elif delivery_type == 'address':
-            serializer_class = AddressOrderGiftCardSerializer
             extra_field = ''
         else:
             raise serializers.ValidationError({'detail': '해당 배송방법이 존재하지 않습니다.'})
 
         timestamp = int(datetime.datetime.now().timestamp() * 1000)
         merchant_uid = 'giftCard_' + str(timestamp)
+        serializer_class = OrderGiftCardSerializer
 
         if request.data.get('is_happyCash'):
             is_happyCash = True
@@ -192,7 +191,7 @@ class OrderGiftCardWithPINListView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().select_related('created_in_order')
         return queryset.filter(created_in_order__order_gift_card__user=user,
                                created_in_order__order_gift_card__is_purchase=True,
                                created_in_order__order_gift_card__delivery_type=self.request.query_params.get('delivery_type'))

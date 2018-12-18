@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
-from ..models import GiftCardType, OrderGiftCard, EmailOrderGiftCard, SMSOrderGiftCard, AddressOrderGiftCard, \
-    HappyGiftCard, PINGiftCard, OrderGiftCardAmount
+from ..models import GiftCardType, OrderGiftCard, HappyGiftCard, PINGiftCard, OrderGiftCardAmount, EmailOrderGiftCard
 
 
 class PINGiftCardSerializer(serializers.ModelSerializer):
@@ -81,58 +80,18 @@ class OrderGiftCardAmountSerializer(serializers.ModelSerializer):
 
     def get_order_gift_card(self, obj):
         delivery_type = self.context.get('delivery_type')
+        serializer_class = OrderGiftCardSerializer
+        model_class = OrderGiftCard
 
         if delivery_type == 'email':
-            serializer_class = EmailOrderGiftCardSerializer
-            queryset = EmailOrderGiftCard
             extra_field = 'email'
         elif delivery_type == 'sms':
-            serializer_class = SMSOrderGiftCardSerializer
-            queryset = SMSOrderGiftCard
             extra_field = 'sms'
         elif delivery_type == 'address':
-            serializer_class = AddressOrderGiftCardSerializer
-            queryset = AddressOrderGiftCard
             extra_field = ''
         else:
             raise serializers.ValidationError({'detail': '해당 배송방법이 존재하지 않습니다.'})
 
-        order_gift_card = queryset.objects.get(ordergiftcardamount=obj)
+        order_gift_card = model_class.objects.get(ordergiftcardamount=obj)
         serializer = serializer_class(order_gift_card)
         return serializer.data
-
-
-class EmailOrderGiftCardSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EmailOrderGiftCard
-        exclude = (
-            'id',
-            'user',
-        )
-        read_only_fields = (
-            'created_at',
-        )
-
-
-class SMSOrderGiftCardSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SMSOrderGiftCard
-        exclude = (
-            'id',
-            'user',
-        )
-        read_only_fields = (
-            'created_at',
-        )
-
-
-class AddressOrderGiftCardSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AddressOrderGiftCard
-        exclude = (
-            'id',
-            'user',
-        )
-        read_only_fields = (
-            'created_at',
-        )

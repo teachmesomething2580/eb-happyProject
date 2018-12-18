@@ -11,8 +11,7 @@ from cashes.apis.pagination import CashListPagination
 from cashes.apis.permissions import IsAuthenticatedWithPurchase
 from cashes.apis.serializer import CashPurchaseSerializer
 from cashes.models import Cash
-from giftcard.apis.serializer import EmailOrderGiftCardSerializer, SMSOrderGiftCardSerializer, \
-    AddressOrderGiftCardSerializer
+from giftcard.apis.serializer import OrderGiftCardSerializer
 from giftcard.models import OrderGiftCard, GiftCardType
 
 
@@ -116,6 +115,8 @@ class OrderCashToGiftCard(APIView):
 
         full_amount = 0
 
+        serializer_class = OrderGiftCardSerializer
+
         # 상품권 개수 변조 확인
         for p in purchase_list:
             for price in p['giftcard_info']:
@@ -129,13 +130,10 @@ class OrderCashToGiftCard(APIView):
             raise serializers.ValidationError('값이 변조되었습니다.')
 
         if delivery_type == 'email':
-            serializer_class = EmailOrderGiftCardSerializer
             extra_field = 'email'
         elif delivery_type == 'sms':
-            serializer_class = SMSOrderGiftCardSerializer
             extra_field = 'phone'
         elif delivery_type == 'address':
-            serializer_class = AddressOrderGiftCardSerializer
             extra_field = ''
             # 추후 변경성
         else:
