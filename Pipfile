@@ -24,6 +24,8 @@ notebook = "*"
 "beautifulsoup4" = "*"
 selenium = "*"
 gevent = "*"
+django-debug-toolbar = "*"
+django-debug-toolbar-request-history = "*"
 
 [requires]
 python_version = "3.6"

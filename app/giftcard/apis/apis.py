@@ -38,7 +38,7 @@ class PINGiftCardPurchaseView(APIView):
         try:
             PINGiftCardList = request.data['PINGiftCardList']
         except KeyError:
-            raise serializers.ValidationError({'detail': '전달되지 않은 정봅로 인해 결제가 취소됩니다.'})
+            raise serializers.ValidationError({'detail': '전달되지 않은 정보로 인해 결제가 취소됩니다.'})
 
         exst_PINGiftCardList = []
 
@@ -46,8 +46,8 @@ class PINGiftCardPurchaseView(APIView):
             try:
                 PIN_number = PIN.get('PIN')
                 created_at = datetime.datetime.strptime(PIN.get('created_at'), '%Y-%m-%d')
-            except KeyError:
-                raise serializers.ValidationError({'detail': '전달되지 않은 정봅로 인해 결제가 취소됩니다.'})
+            except (KeyError, ValueError):
+                raise serializers.ValidationError({'detail': '전달되지 않은 정보로 인해 결제가 취소됩니다.'})
 
             try:
                 p = PINGiftCard.objects.get(PIN=PIN_number, is_used=False, created_at=created_at)

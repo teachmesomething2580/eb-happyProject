@@ -4,6 +4,9 @@ from use_point.models import UsePoint, UsePointCategory
 
 
 class UsePointLikeSerializer(serializers.Serializer):
+    """
+    좋아요 버튼에 대한 Serializer
+    """
     usepoint_pk = serializers.IntegerField()
 
     def __init__(self, *args, **kwargs):
@@ -34,14 +37,24 @@ class UsePointLikeSerializer(serializers.Serializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """
+    Usepoint Category List Serializer
+    """
     class Meta:
         model = UsePointCategory
         fields = '__all__'
 
 
 class UsePointSerializer(serializers.ModelSerializer):
+    """
+    UsePoint Serializer
+    """
     is_liked = serializers.SerializerMethodField()
     like_users_count = serializers.SerializerMethodField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.queryset = None
 
     class Meta:
         model = UsePoint
@@ -60,31 +73,25 @@ class UsePointSerializer(serializers.ModelSerializer):
         depth = 1
 
     def get_is_liked(self, obj):
-        request = self.context.get('request', None)
-        if request:
-            if obj.like_users.filter(pk=request.user.pk).exists():
-                return True
-
-        return False
+        return getattr(obj, 'is_like', False)
 
     def get_like_users_count(self, obj):
         return obj.like_users_count
 
 
-class UsePointImportListSerializer(serializers.ListSerializer):
-    def to_representation(self, data):
-        data = data.filter(is_online=True, where_to_use__is_import_point=True)
-        return super(UsePointImportListSerializer, self).to_representation(data)
-
-
 class UsePointImportSerializer(serializers.ModelSerializer):
+    """
+    입점몰을 카테고리별로 나타내기위한 ListSerializer
+    """
     class Meta:
         model = UsePoint
         fields = '__all__'
-        list_serializer_class = UsePointImportListSerializer
 
 
 class CategoryUsePointSerializer(serializers.ModelSerializer):
+    """
+    입점몰의 카테고리별로 UsePoint를 나타냄
+    """
     usepoint_set = UsePointImportSerializer(read_only=True, many=True)
 
     class Meta:

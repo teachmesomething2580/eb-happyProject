@@ -12,7 +12,7 @@ class UserIntegrationManager(UserManager):
 
         # 회원가입시 500 Hammer 증정
         Cash.objects.create(
-            content='회원가입 500원',
+            merchant_uid='회원가입 500원',
             amount=500,
             use_or_save='s',
             hammer_or_cash='hm',

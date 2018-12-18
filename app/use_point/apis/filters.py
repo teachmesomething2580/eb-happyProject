@@ -27,4 +27,5 @@ class ProductFilter(django_filters.FilterSet):
             'category__name': ['exact', ],
             'category__names': ['exact', ],
             'is_online': ['exact', ],
+            'where_to_use__is_import_point': ['exact', ],
         }
