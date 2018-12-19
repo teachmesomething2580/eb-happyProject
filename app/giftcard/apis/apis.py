@@ -15,7 +15,7 @@ from giftcard.models import GiftCardType, OrderGiftCard, HappyGiftCard, PINGiftC
 
 
 class GiftCardTypeListAPIView(generics.ListAPIView):
-    queryset = GiftCardType.objects.all()
+    queryset = GiftCardType.objects.all().select_related('mall_category')
     serializer_class = GiftCardTypeSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ('is_hotdeal', )
@@ -44,9 +44,16 @@ class PINGiftCardPurchaseView(APIView):
         for PIN in PINGiftCardList:
             try:
                 PIN_number = PIN.get('PIN')
+
+                if PIN_number == '':
+                    continue
+
                 created_at = datetime.datetime.strptime(PIN.get('created_at'), '%Y-%m-%d')
-            except (KeyError, ValueError):
+
+            except KeyError:
                 raise serializers.ValidationError({'detail': '전달되지 않은 정보로 인해 결제가 취소됩니다.'})
+            except ValueError:
+                raise serializers.ValidationError({'detail': '정확한 발행일을 입력해주세요.'})
 
             try:
                 p = PINGiftCard.objects.get(PIN=PIN_number, is_used=False, created_at=created_at)

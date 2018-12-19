@@ -213,6 +213,8 @@ class OrderGiftCard(models.Model):
             )
 
         for purchase in purchase_list:
+            if not purchase['infoTo']:
+                raise serializers.ValidationError({'detail': '배달정보가 전달되지 않았습니다.'})
             data = {
                 'merchant_uid': merchant_uid,
                 'name': purchase['name'],
