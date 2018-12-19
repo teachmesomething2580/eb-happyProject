@@ -16,7 +16,7 @@ class Rating(models.Model):
 
     rating_choices_name = models.CharField(
         choices=RATING_CHOICES,
-        max_length=1,
+        max_length=2,
         unique=True,
     )
     ticket_count = models.IntegerField()
@@ -35,7 +35,11 @@ class User(AbstractUser):
     phone = PhoneNumberField(unique=True)
     email = models.EmailField(unique=True)
     name = models.CharField(max_length=10)
-    birth = models.DateField()
+    birth = models.DateField(
+        # for Debug
+        blank=True,
+        null=True,
+    )
     sns_agree = models.BooleanField(default=False)
     email_agree = models.BooleanField(default=False)
     online_available_use_category_limit = models.ManyToManyField(
@@ -64,7 +68,7 @@ class User(AbstractUser):
 
 
 class Address(models.Model):
-    postcode = models.CharField(max_length=5)
+    postcode = models.CharField(max_length=6)
     address = models.TextField()
     detail = models.TextField()
     user = models.ForeignKey(

@@ -16,17 +16,17 @@ class Cash(models.Model):
         ('hm', 'Hammer'),
     )
 
-    content = models.CharField(
+    merchant_uid = models.CharField(
         max_length=100,
     )
     amount = models.PositiveIntegerField()
     hammer_or_cash = models.CharField(
         choices=HAMMER_OR_HAPPY,
-        max_length=2,
+        max_length=3,
     )
     use_or_save = models.CharField(
         choices=USE_OR_SAVE_CHOICES,
-        max_length=1,
+        max_length=2,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
@@ -51,7 +51,7 @@ class Cash(models.Model):
             raise serializers.ValidationError({'detail': '잔액이 부족합니다.'})
 
         hammer = Cash(
-            content='해머 전환',
+            merchant_uid='해머 전환',
             amount=amount,
             hammer_or_cash='hm',
             use_or_save='u',
@@ -59,7 +59,7 @@ class Cash(models.Model):
         )
 
         cash = Cash(
-            content='해머 전환',
+            merchant_uid='해머 전환',
             amount=amount,
             hammer_or_cash='hc',
             use_or_save='s',
@@ -92,6 +92,8 @@ class Cash(models.Model):
                 raise serializers.ValidationError({'detail': '잔액이 부족합니다.'})
 
             if hammer_or_cash == 'hm':
+                if user.hammer - amount < 0:
+                    raise serializers.ValidationError({'detail': '잔액이 부족합니다.'})
                 user.hammer -= amount
             else:
                 user.happy_cash -= amount

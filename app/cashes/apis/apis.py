@@ -1,4 +1,4 @@
-import json
+import datetime
 
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, permissions, status, serializers
@@ -6,24 +6,24 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from cashes.apis.backends import IamPortAPI
-from cashes.apis.pagination import CashResultSetPagination
+from cashes.apis.filters import CashFilter
+from cashes.apis.pagination import CashListPagination
 from cashes.apis.permissions import IsAuthenticatedWithPurchase
 from cashes.apis.serializer import CashPurchaseSerializer
 from cashes.models import Cash
-from giftcard.apis.serializer import EmailOrderGiftCardSerializer, SMSOrderGiftCardSerializer, \
-    AddressOrderGiftCardSerializer
+from giftcard.apis.serializer import OrderGiftCardSerializer
 from giftcard.models import OrderGiftCard, GiftCardType
 
 
 class CashPurchaseListView(generics.ListAPIView):
     queryset = Cash.objects.all()
     serializer_class = CashPurchaseSerializer
-    pagination_class = CashResultSetPagination
+    pagination_class = CashListPagination
     permission_classes = (
         permissions.IsAuthenticated,
     )
     filter_backends = (DjangoFilterBackend,)
-    filter_fields = ('hammer_or_cash', )
+    filter_class = CashFilter
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -40,7 +40,6 @@ class CashPurchaseGetRequest(APIView):
         # 필수로 가져와야하는 항목을 가져온다.
         imp_uid = request.data['imp_uid']
         try:
-            merchant_uid = request.data['merchant_uid']
             paid_amount = request.data['paid_amount']
         except KeyError:
             IamPortAPI().purchase_cancel(imp_uid)
@@ -51,8 +50,12 @@ class CashPurchaseGetRequest(APIView):
         result_status = result['status']
 
         if result_status == 'success':
+            timestamp = int(datetime.datetime.now().timestamp() * 1000)
+            merchant_uid = 'happyCash_' + str(timestamp)
+            paid_amount = paid_amount + paid_amount * 0.03
+
             data = {
-                'content': merchant_uid,
+                'merchant_uid': merchant_uid,
                 'amount': paid_amount,
                 'hammer_or_cash': 'hc',
                 'use_or_save': 's',
@@ -112,6 +115,8 @@ class OrderCashToGiftCard(APIView):
 
         full_amount = 0
 
+        serializer_class = OrderGiftCardSerializer
+
         # 상품권 개수 변조 확인
         for p in purchase_list:
             for price in p['giftcard_info']:
@@ -125,13 +130,10 @@ class OrderCashToGiftCard(APIView):
             raise serializers.ValidationError('값이 변조되었습니다.')
 
         if delivery_type == 'email':
-            serializer_class = EmailOrderGiftCardSerializer
             extra_field = 'email'
         elif delivery_type == 'sms':
-            serializer_class = SMSOrderGiftCardSerializer
             extra_field = 'phone'
         elif delivery_type == 'address':
-            serializer_class = AddressOrderGiftCardSerializer
             extra_field = ''
             # 추후 변경성
         else:
