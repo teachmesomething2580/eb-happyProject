@@ -34,9 +34,14 @@ class InquiryCreateListAPIView(generics.ListCreateAPIView):
     pagination_class = FAQPagination
 
     def perform_create(self, serializer):
+        if not self.request.data._mutable:
+            self.request.data._mutable = True
+
         try:
             pk = self.request.data.pop('category')[0]
-            image = self.request.data.pop('image')[0]
+            image = None
+            if self.request.data.get('image'):
+                image = self.request.data.pop('image')[0]
             f = FAQSubCategory.objects.get(pk=pk)
             serializer.save(user=self.request.user, category=f, file=image)
         except FAQSubCategory.DoesNotExist:

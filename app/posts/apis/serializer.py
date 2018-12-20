@@ -32,13 +32,12 @@ class FAQSubCategorySerializer(serializers.ModelSerializer):
 
 
 class InquirySerializer(serializers.ModelSerializer):
-    category = FAQSubCategorySerializer()
+    category = FAQSubCategorySerializer(read_only=True)
 
     class Meta:
         model = Inquiry
         fields = '__all__'
         read_only_fields = (
-            'category',
             'user',
         )
 
