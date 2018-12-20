@@ -24,6 +24,7 @@ WSGI_APPLICATION = 'config.wsgi.production.application'
 # CORS ALLOW WHITELIST
 CORS_ORIGIN_WHITELIST = (
     'ashe.kr',
+    'ashe.kr.s3-website.ap-northeast-2.amazonaws.com',
 )
 
 # Database

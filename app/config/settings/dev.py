@@ -17,6 +17,8 @@ WSGI_APPLICATION = 'config.wsgi.dev.application'
 
 DATABASES = DEV_JSON['DATABASES']
 
+MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
+
 AWS_STORAGE_BUCKET_NAME = DEV_JSON['AWS_STORAGE_BUCKET_NAME']
 
 STATIC_DIR = os.path.join(BASE_DIR, 'static')

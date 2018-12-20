@@ -27,7 +27,6 @@ STATIC_URL = '/static/'
 
 # FOR MEDIA
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(ROOT_DIR, '.media')
 
 AUTH_USER_MODEL = 'members.User'
 # Application definition
