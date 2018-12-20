@@ -23,21 +23,23 @@ class FAQSerializer(serializers.ModelSerializer):
         depth = 1
 
 
+class FAQSubCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FAQSubCategory
+        exclude = (
+            'main_category',
+        )
+
+
 class InquirySerializer(serializers.ModelSerializer):
+    category = FAQSubCategorySerializer()
+
     class Meta:
         model = Inquiry
         fields = '__all__'
         read_only_fields = (
             'category',
             'user',
-        )
-
-
-class FAQSubCategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FAQSubCategory
-        exclude = (
-            'main_category',
         )
 
 

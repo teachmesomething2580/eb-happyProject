@@ -173,7 +173,7 @@ class OrderGiftCardPurchaseView(APIView):
 
 
 class OrderGiftCardListView(generics.ListAPIView):
-    queryset = OrderGiftCard.objects.all().distinct('merchant_uid')
+    queryset = OrderGiftCard.objects.all().order_by('-pk', 'merchant_uid').distinct('pk', 'merchant_uid')
     serializer_class = OrderGiftCardSerializer
     pagination_class = OrderGiftCardPagination
     permission_classes = (
@@ -201,7 +201,7 @@ class OrderGiftCardWithPINListView(generics.ListAPIView):
         queryset = super().get_queryset().select_related('created_in_order')
         return queryset.filter(created_in_order__order_gift_card__user=user,
                                created_in_order__order_gift_card__is_purchase=True,
-                               created_in_order__order_gift_card__delivery_type=self.request.query_params.get('delivery_type'))
+                               created_in_order__order_gift_card__delivery_type=self.request.query_params.get('delivery_type')).order_by('-pk')
 
     def get_serializer_context(self):
         return {'delivery_type': self.request.query_params.get('delivery_type')}

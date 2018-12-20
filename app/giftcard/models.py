@@ -190,6 +190,9 @@ class OrderGiftCard(models.Model):
         null=True,
     )
 
+    class Meta:
+        ordering = ['-created_at']
+
     def save(self, force_insert=False, force_update=False, using=None,
              update_fields=None):
         if self._email is None and self._sms is None and self._address is None:

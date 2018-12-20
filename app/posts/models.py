@@ -50,11 +50,16 @@ class Inquiry(models.Model):
         on_delete=models.CASCADE,
     )
     content = models.TextField()
+    title = models.CharField(
+        max_length=80,
+    )
+    is_answered = models.BooleanField(default=False)
     file = models.FileField(
         upload_to='files',
         blank=True,
         null=True,
     )
+    created_at = models.DateField(auto_now_add=True)
 
     class Meta:
         ordering = ['-pk']

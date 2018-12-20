@@ -7,6 +7,8 @@ from cashes.manager import CashManager
 
 class Cash(models.Model):
 
+    objects = CashManager()
+
     USE_OR_SAVE_CHOICES = (
         ('u', 'use'),
         ('s', 'save'),

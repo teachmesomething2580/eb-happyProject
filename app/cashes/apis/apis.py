@@ -28,7 +28,7 @@ class CashPurchaseListView(generics.ListAPIView):
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
-        return queryset.filter(user=user)
+        return queryset.filter(user=user).order_by('-created_at')
 
 
 class CashPurchaseGetRequest(APIView):

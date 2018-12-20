@@ -26,7 +26,7 @@ class FAQListAPIView(generics.ListAPIView):
 
 
 class InquiryCreateListAPIView(generics.ListCreateAPIView):
-    queryset = Inquiry.objects.all()
+    queryset = Inquiry.objects.select_related('category')
     serializer_class = InquirySerializer
     permission_classes = (
         permissions.IsAuthenticated,
@@ -35,9 +35,10 @@ class InquiryCreateListAPIView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         try:
-            pk = self.request.data.pop('category')
+            pk = self.request.data.pop('category')[0]
+            image = self.request.data.pop('image')[0]
             f = FAQSubCategory.objects.get(pk=pk)
-            serializer.save(user=self.request.user, category=f)
+            serializer.save(user=self.request.user, category=f, file=image)
         except FAQSubCategory.DoesNotExist:
             raise serializers.ValidationError({'detail': 'Cateogry가 제공되지 않았거나 잘못된 정보가 전달되었습니다.'})
         except KeyError:
