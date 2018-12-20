@@ -15,6 +15,7 @@ djangorestframework = "*"
 requests = "*"
 django-cors-headers = "*"
 django-filter = "*"
+sentry-sdk = "==0.6.4"
 
 [dev-packages]
 awsebcli = "*"
