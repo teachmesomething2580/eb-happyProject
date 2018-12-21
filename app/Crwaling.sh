@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+./manage.py loaddata happygiftcard.json
 ./manage.py loaddata rating.json
 ./manage.py get_event_list
 ./manage.py get_gift_card_type
