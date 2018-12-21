@@ -11,6 +11,11 @@
 버그 레포팅: Sentry
 ```
 
+## 개발 기간
+```
+2018-11-9 ~ 2018-12-21
+```
+
 ## API 리스트
 
 `https://teachmesomething2580.gitbook.io/happymoney/`
