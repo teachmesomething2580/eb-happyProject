@@ -9,8 +9,6 @@ DEBUG = False
 STATIC_ROOT = os.path.join(ROOT_DIR, '.static')
 
 ALLOWED_HOSTS = [
-    '127.0.0.1',
-    '.elasticbeanstalk.com',
     '.ashe.kr',
 ]
 
@@ -27,8 +25,8 @@ WSGI_APPLICATION = 'config.wsgi.production.application'
 
 # CORS ALLOW WHITELIST
 CORS_ORIGIN_WHITELIST = (
+    'www.ashe.kr',
     'ashe.kr',
-    'ashe.kr.s3-website.ap-northeast-2.amazonaws.com',
 )
 
 # Database

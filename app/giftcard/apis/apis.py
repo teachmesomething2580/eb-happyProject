@@ -173,7 +173,7 @@ class OrderGiftCardPurchaseView(APIView):
 
 
 class OrderGiftCardListView(generics.ListAPIView):
-    queryset = OrderGiftCard.objects.all().order_by('-pk', 'merchant_uid').distinct('pk', 'merchant_uid')
+    queryset = OrderGiftCard.objects.all().order_by('merchant_uid').distinct('merchant_uid')
     serializer_class = OrderGiftCardSerializer
     pagination_class = OrderGiftCardPagination
     permission_classes = (
