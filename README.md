@@ -41,3 +41,19 @@ sh Crawling.sh
 # 서버 실행
 ./manage.py runserver
 ```
+
+## 수정해야할 사항
+
++ 는 추가해야할 사항
+* 은 수정해야할 사항
+- 는 없애야할 사항
+
+```
++ Query 캐싱
++ 주소 저장, 주소지 상품권 결제
++ Celery, Redis, ElasticbeansTalk Cache를 사용해보기
++ 핀번호 EMAIL 발송
+
+* 주문 Model 변경 (현재는 하나의 주문에 여러 사람이 있으면 여러 주문을 생성함)
+* FAQ CORS
+```
