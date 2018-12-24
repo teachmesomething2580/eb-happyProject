@@ -45,6 +45,19 @@ class UsePointRetrieveGenericAPIView(generics.RetrieveAPIView):
     queryset = UsePoint.objects.all()
     serializer_class = UsePointSerializer
 
+    def get_queryset(self):
+        queryset = UsePoint.objects \
+            .select_related('where_to_use') \
+            .prefetch_related('like_users')
+        if self.request.user.is_authenticated:
+            user_exists = User.objects.filter(
+                pk=self.request.user.pk,
+                pk__in=OuterRef('like_users'),
+            )
+            queryset = queryset.annotate(is_like=Exists(user_exists))
+        return queryset
+
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
         if self.request.user.is_authenticated:
