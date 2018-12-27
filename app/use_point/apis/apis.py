@@ -32,7 +32,7 @@ class UsePointListGenericAPIView(generics.ListAPIView):
         if self.request.user.is_authenticated:
             user_exists = User.objects.filter(
                 pk=self.request.user.pk,
-                pk__in=OuterRef('like_users'),
+                usepoint__in=OuterRef('pk'),
             )
             queryset = queryset.annotate(is_like=Exists(user_exists))
         return queryset
@@ -55,7 +55,7 @@ class UsePointRetrieveGenericAPIView(generics.RetrieveAPIView):
             #     pk__in=OuterRef('like_users'),
             # )
             # queryset = queryset.annotate(is_like=Exists(user_exists))
-            queryset = queryset.annotate(is_like=Exists(queryset.filter(like_users__in=self.request.user)))
+            queryset = queryset.annotate(is_like=Exists(queryset.filter(like_users__in=[self.request.user, ])))
         return queryset
 
 
