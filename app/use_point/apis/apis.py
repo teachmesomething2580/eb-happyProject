@@ -55,6 +55,7 @@ class UsePointRetrieveGenericAPIView(generics.RetrieveAPIView):
                 pk__in=OuterRef('like_users'),
             )
             queryset = queryset.annotate(is_like=Exists(user_exists))
+            queryset = queryset.annotate(is_like=Exists(queryset.filter(like_users__in=self.request.user)))
         return queryset
 
 
