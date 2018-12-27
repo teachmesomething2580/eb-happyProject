@@ -50,11 +50,11 @@ class UsePointRetrieveGenericAPIView(generics.RetrieveAPIView):
             .select_related('where_to_use') \
             .prefetch_related('like_users')
         if self.request.user.is_authenticated:
-            user_exists = User.objects.filter(
-                pk=self.request.user.pk,
-                pk__in=OuterRef('like_users'),
-            )
-            queryset = queryset.annotate(is_like=Exists(user_exists))
+            # user_exists = User.objects.filter(
+            #     pk=self.request.user.pk,
+            #     pk__in=OuterRef('like_users'),
+            # )
+            # queryset = queryset.annotate(is_like=Exists(user_exists))
             queryset = queryset.annotate(is_like=Exists(queryset.filter(like_users__in=self.request.user)))
         return queryset
 
