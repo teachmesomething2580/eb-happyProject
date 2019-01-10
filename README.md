@@ -54,6 +54,7 @@ sh Crawling.sh
 + Celery, Redis, ElasticbeansTalk Cache를 사용해보기
 + 핀번호 EMAIL 발송
 
+* URL RESTFUL 하게 
 * 주문 Model 변경 (현재는 하나의 주문에 여러 사람이 있으면 여러 주문을 생성함)
 * FAQ CORS
 ```
