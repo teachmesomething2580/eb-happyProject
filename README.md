@@ -67,15 +67,18 @@ sh Crawling.sh
 	purchase: {
 		delivery_type: "sms, email 둘중 하나의 방법",
 		purchase_list: [
-			name: "받는 사람 이름",
-			infoTo: "받는 사람이메일 혹은 전화번호"
-			giftcard_info = [
-				{
-					type: "얼마짜리 상품권",
-					amount: "개수"
-				},
-				...
-			],
+			{
+				name: "받는 사람 이름",
+				infoTo: "받는 사람이메일 혹은 전화번호"
+				giftcard_info = [
+					{
+						type: "얼마짜리 상품권",
+						amount: "개수"
+					},
+					...
+			
+				]
+			},
 			...
 		]
 	}
